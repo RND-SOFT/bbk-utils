@@ -1,0 +1,182 @@
+require 'tmpdir'
+
+RSpec.describe Aggredator::Config do
+  let(:config){ described_class.new }
+
+  around :each do |example|
+    Dir.mktmpdir do |dir|
+      Dir.chdir dir do
+        example.run
+      end
+    end
+  end
+
+  describe 'delegating' do
+    it 'instance' do
+      expect(described_class.instance).to be_a(described_class)
+    end
+
+    [:map, :require, :optional, :run!, :[], :[]=, :content, :to_s].each do |method|
+      it method.to_s do
+        arity = described_class.new.method(method).parameters.select{|k, _v| k == :req }.count
+        args = arity.times.map(&:to_s)
+        expect(described_class.instance).to receive(method)
+        described_class.send(method, *args)
+      end
+    end
+  end
+
+  describe 'File mapping' do
+    let(:file){ Faker::File.file_name(dir: 'some/path') }
+    let(:content){ Faker::Ancient.hero }
+
+    it 'optional file can be skipped' do
+      config.map('FILE_ENV', file, required: false)
+      env = {}
+
+      expect do
+        config.run!(env)
+      end.not_to raise_error
+    end
+
+    it 'required file cannot be skipped' do
+      config.map('FILE_ENV', file, required: true)
+      env = {}
+
+      expect do
+        config.run!(env)
+      end.to raise_error(RuntimeError)
+    end
+
+    it 'File must be mapped' do
+      config.map('FILE_ENV', file)
+      env = { 'FILE_ENV' => content }
+      config.run!(env)
+
+      expect(File.read(file)).to eq content
+    end
+
+    it 'path can be accessed by []' do
+      config.map('FILE_ENV', file)
+      env = { 'FILE_ENV' => content }
+
+      expect(config['FILE_ENV']).not_to eq file
+      config.run!(env)
+      expect(config['FILE_ENV']).to eq file
+    end
+
+    it 'content can be accessed by content' do
+      config.map('FILE_ENV', file)
+      env = { 'FILE_ENV' => content }
+      config.run!(env)
+      expect(config.content('FILE_ENV')).to eq content
+    end
+  end
+
+  describe 'Env parsing' do
+    let(:value){ Faker::Ancient.hero }
+
+    it 'optional variable' do
+      config.optional('OPTIONAL')
+      env = {}
+
+      expect do
+        config.run!(env)
+      end.not_to raise_error
+    end
+
+    it 'required variable must raise' do
+      config.require('REQUIRED')
+      env = {}
+
+      expect do
+        config.run!(env)
+      end.to raise_error(RuntimeError)
+    end
+
+    it 'variable can be accessed by []' do
+      config.require('REQUIRED')
+      env = { 'REQUIRED' => value }
+
+      expect(config['REQUIRED']).not_to eq value
+      config.run!(env)
+      expect(config['REQUIRED']).to eq value
+    end
+
+    it 'variable can be updated by []=' do
+      config.require('REQUIRED')
+      env = { 'REQUIRED' => value }
+
+      config.run!(env)
+      expect(config['REQUIRED']).to eq value
+      config['REQUIRED'] = 777
+      expect(config['REQUIRED']).to eq 777
+    end
+
+    it 'default value' do
+      config.optional('OPTIONAL', default: 'def1')
+      env = {}
+
+      config.run!(env)
+      expect(config['OPTIONAL']).to eq 'def1'
+    end
+
+    it 'default value can be overriden' do
+      config.optional('OPTIONAL', default: 'def1')
+      env = { 'OPTIONAL' => 'value2' }
+
+      config.run!(env)
+      expect(config['OPTIONAL']).to eq 'value2'
+    end
+  end
+
+  describe 'Example' do
+    def sort_output(string)
+      string.strip.split("\n").map(&:strip).sort.join("\n")
+    end
+
+    it 'complete' do
+      config.require('REQUIRED_VAR')
+      config.require('REQUIRED_VAR_DESC', desc: 'desc1')
+
+      config.optional('OPTIONAL_VAR')
+      config.optional('OPTIONAL_VAR_DESC', desc: 'desc2')
+
+      config.optional('OPTIONAL_VAR2', default: 'default1')
+      config.optional('OPTIONAL_VAR2_DESC', default: 'default1', desc: 'desc3')
+
+      config.map('FILE1', 'some/folder/file.1')
+      config.map('FILE2', 'some/folder/file.2', desc: 'file2 description')
+
+      env = {
+        'REQUIRED_VAR' => 'req_val1',
+        'REQUIRED_VAR_DESC' => 'req_val_desc1',
+
+        'OPTIONAL_VAR_DESC' => 'opt_val_desc1',
+        'OPTIONAL_VAR2_DESC' => 'opt_val_desc2',
+
+        'FILE1' => 'content1',
+        'FILE2' => 'content2'
+      }
+
+      expect do
+        config.run!(env)
+      end.not_to raise_error
+
+      result = %{
+Environment variables:
+   File <FILE1>               -> "some/folder/file.1"
+   File <FILE2>               -> "some/folder/file.2" file2 description
+   <REQUIRED_VAR>
+   <REQUIRED_VAR_DESC>                             desc1
+   [OPTIONAL_VAR]
+   [OPTIONAL_VAR_DESC]                             desc2
+   [OPTIONAL_VAR2] (=default1)
+   [OPTIONAL_VAR2_DESC] (=default1)                desc3
+}
+
+      expect(sort_output(config.to_s)).to eq(sort_output(result))
+    end
+  end
+end
+

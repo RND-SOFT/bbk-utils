@@ -1,0 +1,5 @@
+require 'active_support'
+require 'aggredator/utils/config'
+require 'aggredator/utils/crypt'
+require 'aggredator/utils/logger'
+require 'aggredator/version'

@@ -1,0 +1,61 @@
+before_script: &before_pipeline_script
+  # Install ssh-agent if not already installed, it is required by Docker.
+  # (change apt-get to yum if you use a CentOS-based image)
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+
+  # Run ssh-agent (inside the build environment)
+  - eval $(ssh-agent -s)
+
+  # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+  - ssh-add <(echo "$SSH_PRIVATE_KEY")
+
+  # For Docker builds disable host key checking. Be aware that by adding that
+  # you are suspectible to man-in-the-middle attacks.
+  # WARNING: Use this only with the Docker executor, if you use it with shell
+  # you will overwrite your user's SSH config.
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  - mkdir -p ~/.docker
+
+stages:
+  - build
+  - tests
+
+build:
+  image: rnds/ruby:2.5-test
+  stage: build
+  variables:
+    BUILDVERSION: ${CI_PIPELINE_ID}
+  script:
+    - bundle install --jobs=3 --path vendor/bundle && bundle package --all
+    - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'` 
+  cache:
+    paths:
+      - vendor/bundle
+      - vendor/cache
+  artifacts:
+    name: "gem"
+    paths:
+      - ./*.gem
+
+test:
+  image: rnds/ruby:2.5-test
+  stage: tests
+  variables:
+    GITLAB: https://br.rnds.pro
+  script:
+    - bundle install --jobs=3 --path vendor/bundle && bundle package --all
+    - bundle exec rspec
+    
+    - bundle audit update
+    - (cd rails && bundle audit) || true
+    - (cd rails && bundle outdated --only-explicit --no-pre --group default) || true
+    - rndslab.rb -t "$BOT_TOKEN" -j "$CI_PROJECT_ID" --badge "ruby -e \"require 'rubygems'; puts Gem::Specification::load('aggredator-utils.gemspec').version\"||version||blue?icon=ruby||https://br.rnds.pro/aggredator/gems/utils||126"
+    - rndslab.rb -t "$BOT_TOKEN" -j "$CI_PROJECT_ID" --badge "bundle outdated --only-explicit --no-pre --group default | grep '*' | wc -l||outdated||orange||https://br.rnds.pro/aggredator/gems/utils||127"
+    - rndslab.rb -t "$BOT_TOKEN" -j "$CI_PROJECT_ID" --badge "bundle audit | grep 'Name:' | sort | uniq | wc -l||vulnerable||red||https://br.rnds.pro/aggredator/gems/utils||128"
+    - rndslab.rb -t "$BOT_TOKEN" -j "$CI_PROJECT_ID" --badge "bundle exec rubycritic -f lint lib | tail -n 1 | cut -d ' ' -f2 ||quality||black||https://br.rnds.pro/aggredator/gems/utils||129"
+  cache:
+    policy: pull
+    paths:
+      - vendor/bundle
+      - vendor/cache
