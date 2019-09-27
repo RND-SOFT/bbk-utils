@@ -5,6 +5,9 @@ module Aggredator
 
   class Logger < ::Logger
     
+    DEFAULT_NAME = 'aggredator'
+    DEFAULT_LEVEL = 'DEBUG'
+
     def initialize(progname, level)
       STDOUT.sync = true
       super(STDOUT)
@@ -20,6 +23,10 @@ module Aggredator
   
     def silence(*_args)
       yield self
+    end
+
+    def self.default
+      @@default ||= self.new(DEFAULT_NAME, DEFAULT_LEVEL)
     end
 
   end
