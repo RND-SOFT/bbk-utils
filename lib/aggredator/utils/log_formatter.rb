@@ -16,5 +16,4 @@ module Aggredator
   
   end
    
-
 end
