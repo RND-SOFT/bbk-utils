@@ -6,7 +6,7 @@ module Aggredator
   class Logger < ::Logger
     
     DEFAULT_NAME = 'aggredator'
-    DEFAULT_LEVEL = 'DEBUG'
+    DEFAULT_LEVEL = Logger::Severity::DEBUG
 
     def initialize(progname, level)
       STDOUT.sync = true
@@ -26,7 +26,13 @@ module Aggredator
     end
 
     def self.default
-      @@default ||= self.new(DEFAULT_NAME, DEFAULT_LEVEL)
+      if @default
+        @default
+      else
+        @default = self.new(DEFAULT_NAME, 'UNKNOWN')
+        @default.level = DEFAULT_LEVEL
+        @default
+      end
     end
 
   end
