@@ -18,26 +18,11 @@ before_script: &before_pipeline_script
   - mkdir -p ~/.docker
 
 stages:
-  - build
   - tests
+  - build
+  - publish
 
-build:
-  image: rnds/ruby:2.5-test
-  stage: build
-  variables:
-    BUILDVERSION: ${CI_PIPELINE_ID}
-  script:
-    - bundle install --jobs=3 --path vendor/bundle && bundle package --all
-    - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'` 
-  cache:
-    paths:
-      - vendor/bundle
-      - vendor/cache
-  artifacts:
-    name: "gem"
-    paths:
-      - ./*.gem
-
+  
 test:
   image: rnds/ruby:2.5-test
   stage: tests
@@ -55,7 +40,37 @@ test:
     - rndslab.rb -t "$BOT_TOKEN" -j "$CI_PROJECT_ID" --badge "bundle audit | grep 'Name:' | sort | uniq | wc -l||vulnerable||red||https://br.rnds.pro/aggredator/gems/utils||128"
     - rndslab.rb -t "$BOT_TOKEN" -j "$CI_PROJECT_ID" --badge "bundle exec rubycritic -f lint lib | tail -n 1 | cut -d ' ' -f2 ||quality||black||https://br.rnds.pro/aggredator/gems/utils||129"
   cache:
+    paths:
+      - vendor/bundle
+      - vendor/cache
+
+
+build:
+  image: rnds/ruby:2.5-test
+  stage: build
+  variables:
+    BUILDVERSION: ${CI_PIPELINE_ID}
+  script:
+    - bundle install --jobs=3 --path vendor/bundle && bundle package --all
+    - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'` 
+  cache:
     policy: pull
     paths:
       - vendor/bundle
       - vendor/cache
+  artifacts:
+    name: "gem"
+    paths:
+      - ./*.gem
+
+publish:
+  image: rnds/ruby:2.5-test
+  stage: publish
+  variables:
+    GEM_REPOSITORY: 'http://nexus.rnds.local/repository/internal'
+    BUILDVERSION: ${CI_PIPELINE_ID}
+  script:
+    - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
+  only:
+    refs:
+      - master
