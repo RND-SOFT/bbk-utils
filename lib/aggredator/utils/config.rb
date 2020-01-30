@@ -10,7 +10,7 @@ module Aggredator
   
     class << self
   
-      delegate :map, :require, :optional, :run!, :[], :[]=, :content, :to_s, :to_json, :as_json, :to_yaml, to: :instance
+      delegate :map, :require, :optional, :run!, :[], :[]=, :content, :to_s, :to_json, :as_json, :to_yaml, :fetch, to: :instance
   
     end
   
@@ -72,9 +72,9 @@ module Aggredator
         item[:value]
       end
     end
-  
-    def self.fetch(key, default = nil)
-      instance.store.fetch(key.to_s.upcase, default)
+
+    def fetch(key, default=nil)
+      store.fetch(key.to_s.upcase, default)
     end
   
     def to_s

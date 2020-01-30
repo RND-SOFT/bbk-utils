@@ -70,6 +70,7 @@ publish:
     GEM_REPOSITORY: 'http://nexus.rnds.local/repository/internal'
     BUILDVERSION: ${CI_PIPELINE_ID}
   script:
+    - gem install nexus
     - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
   only:
     refs:
