@@ -9,6 +9,12 @@ module Aggredator
         "@{#{id}}"
       end
 
+      def self.build_incoming_type(name, href)
+        href_uri = URI.parse(href)
+        href_slug = [href_uri.scheme, href_uri.host, *href_uri.path.gsub('.', '-').split('/')].select(&:present?).join('-')  
+        "#{name}_#{href_slug}"
+      end
+
     end
 
 end
