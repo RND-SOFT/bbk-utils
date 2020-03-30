@@ -19,6 +19,12 @@ RSpec.describe Aggredator::Smev3 do
       expect(described_class.build_incoming_type(name, href)).to eq 'DataRequest_urn-x-artefacts-smev-gov-ru-services-message-exchange-types-1-2'
     end
 
+    it 'transliterate russian' do
+      name = 'Запрос'
+      href = 'urn://x-artefacts-smev-gov-ru/services/message-exchange/types/1.2'
+      expect(described_class.build_incoming_type(name, href)).to eq 'Zapros_urn-x-artefacts-smev-gov-ru-services-message-exchange-types-1-2'
+    end
+
   end
 
 end

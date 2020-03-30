@@ -1,4 +1,5 @@
 require 'active_support/core_ext'
+require 'russian'
 require 'aggredator/utils/config'
 require 'aggredator/utils/crypt'
 require 'aggredator/utils/logger'
