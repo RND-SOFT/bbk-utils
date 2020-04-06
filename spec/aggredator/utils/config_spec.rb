@@ -128,6 +128,14 @@ RSpec.describe Aggredator::Config do
       config.run!(env)
       expect(config['OPTIONAL']).to eq 'value2'
     end
+
+    it 'check specific env key' do
+      config.optional('OPTIONAL', key: 'key')
+      env = { 'KEY' => 'value' }
+      config.run!(env)
+      expect(config['OPTIONAL']).to eq 'value'
+    end
+
   end
 
   describe 'Example' do

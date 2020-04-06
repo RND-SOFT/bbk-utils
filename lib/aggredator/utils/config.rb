@@ -19,9 +19,9 @@ module Aggredator
       @store = {}
     end
   
-    def map(env, file, required: true, desc: nil, bool: false)
+    def map(env, file, required: true, desc: nil, bool: false, key: nil)
       @store[env.to_s.upcase] = {
-        env:      env.to_s.upcase,
+        env:      (key || env).to_s.upcase,
         file:     file,
         required: required,
         desc:     desc,
@@ -29,9 +29,9 @@ module Aggredator
       }
     end
   
-    def require(env, desc: nil, bool: false, type: nil)
+    def require(env, desc: nil, bool: false, type: nil, key: nil)
       @store[env.to_s.upcase] = {
-        env:      env.to_s.upcase,
+        env:      (key || env).to_s.upcase,
         required: true,
         desc:     desc,
         bool:     bool,
@@ -39,9 +39,9 @@ module Aggredator
       }
     end
   
-    def optional(env, default: nil, desc: nil, bool: false, type: nil)
+    def optional(env, default: nil, desc: nil, bool: false, type: nil, key: nil)
       @store[env.to_s.upcase] = {
-        env:      env.to_s.upcase,
+        env:      (key || env).to_s.upcase,
         required: false,
         default:  default,
         desc:     desc,
