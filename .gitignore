@@ -14,3 +14,4 @@
 .rubycritic.yml
 rspec.xml
 **/*.gem
+.ruby-version

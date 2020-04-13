@@ -32,4 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov-console'
   spec.add_development_dependency 'rubycritic'
   spec.add_development_dependency 'faker', '~> 2.4'
+  spec.add_development_dependency 'mock_redis'
 end

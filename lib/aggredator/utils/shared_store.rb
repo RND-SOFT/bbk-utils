@@ -1,10 +1,11 @@
+require 'logger'
 require 'active_support/cache'
 
 module Aggredator
   class SharedStore
-    def initialize(redis, key, logger, &block)
+    def initialize(redis, key, logger=nil, &block)
       @store = build_store(redis)
-      @store.logger = logger
+      @store.logger = logger || ::Logger.new(STDOUT)
       @key = key
       @default = block
     end

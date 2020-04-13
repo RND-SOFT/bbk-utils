@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    aggredator-utils (0.1.0)
+    aggredator-utils (0.1.1)
       activesupport
       redis (~> 4.0)
       russian
@@ -54,6 +54,7 @@ GEM
     launchy (2.4.3)
       addressable (~> 2.3)
     minitest (5.14.0)
+    mock_redis (0.22.0)
     parser (2.6.4.1)
       ast (~> 2.4.0)
     path_expander (1.1.0)
@@ -129,6 +130,7 @@ DEPENDENCIES
   bundler (~> 2.0)
   byebug
   faker (~> 2.4)
+  mock_redis
   rake (~> 10.0)
   rspec (~> 3.0)
   rspec_junit_formatter
