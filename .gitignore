@@ -13,3 +13,5 @@
 .byebug_history
 .rubycritic.yml
 rspec.xml
+**/*.gem
+.ruby-version
