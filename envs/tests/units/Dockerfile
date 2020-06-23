@@ -28,7 +28,7 @@ ADD Gemfile Gemfile.lock *.gemspec /home/app/
 ADD lib/aggredator/utils/version.rb /home/app/lib/aggredator/utils/
 
 RUN set -ex \
-  && gem source --add http://${GEM_STORAGE_CREDS}@nexus.rnds.local/repository/internal/ \
+  && gem source --add http://${GEM_STORAGE_AUTH}@nexus.rnds.local/repository/internal/ \
   && gem install bundler && gem update bundler \
   && ping -c 1 nexus.rnds.local \
   && bundle install --jobs=3 --full-index \
