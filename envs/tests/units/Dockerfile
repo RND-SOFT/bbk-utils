@@ -2,6 +2,7 @@ ARG BASE_IMAGE=ruby:2.5-alpine
 ARG BUILD_TAG=2.5
 
 FROM ${BASE_IMAGE} as buildbase
+ARG BUILDKIT_INLINE_CACHE=1
 
 WORKDIR /home/app
 

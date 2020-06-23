@@ -16,6 +16,7 @@ services:
       args:
         BASE_IMAGE: ruby:2.5-alpine
         BUILD_TAG: 2.5
+        BUILDKIT_INLINE_CACHE: 1
     image: buildbase:2.5
     working_dir: /home/app
     
@@ -29,6 +30,7 @@ services:
       args:
         BASE_IMAGE: docker.rnds.pro/aggredator-ruby-base:latest
         BUILD_TAG:  agg
+        BUILDKIT_INLINE_CACHE: 1
     image: buildbase:agg
     working_dir: /home/app
 
