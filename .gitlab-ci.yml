@@ -52,6 +52,7 @@ build:
     BUILDVERSION: ${CI_PIPELINE_ID}
   script:
     - bundle install --jobs=3 --path vendor/bundle && bundle package --all
+    - gem source --add http://${GEM_STORAGE_CREDS}@nexus.rnds.local/repository/internal/
     - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'` 
   cache:
     policy: pull
