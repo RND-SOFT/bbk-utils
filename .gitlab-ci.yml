@@ -20,7 +20,7 @@ before_script:
 stages:
   - tests
   - build
-  - publish
+  - deploy
 
 .test:
   image: rnds/ruby:2.5-test
