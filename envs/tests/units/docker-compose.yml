@@ -1,0 +1,61 @@
+version: "2.3"
+
+x-dockerfile: &df
+  context: ${PWD-./}
+  dockerfile: envs/tests/units/Dockerfile
+
+
+services:
+  buildbase-2.5:
+    build:
+      <<: *df
+      target: buildbase
+      cache_from:
+        - buildbase:2.5
+        - aggutils-tests:2.5
+      args:
+        BASE_IMAGE: ruby:2.5-alpine
+        BUILD_TAG: 2.5
+    image: buildbase:2.5
+    working_dir: /home/app
+    
+  buildbase-agg:
+    build:
+      <<: *df
+      target: buildbase
+      cache_from:
+        - buildbase:agg
+        - aggutils-tests:agg
+      args:
+        BASE_IMAGE: docker.rnds.pro/aggredator-ruby-base:latest
+        BUILD_TAG:  agg
+    image: buildbase:agg
+    working_dir: /home/app
+
+  test-2.5:
+    build:
+      <<: *df
+      target: image
+      args:
+        BUILD_TAG: 2.5
+        GEM_STORAGE_AUTH: ${NEXUS_AUTH-unknown}
+    depends_on:
+      - buildbase-2.5
+    image: aggutils-tests:2.5
+    working_dir: /home/app
+    
+  test-agg:
+    build:
+      <<: *df
+      target: image
+      args:
+        BUILD_TAG: agg
+        GEM_STORAGE_AUTH: ${NEXUS_AUTH-unknown}
+    depends_on:
+      - buildbase-agg
+    image: aggutils-tests:agg
+    working_dir: /home/app
+    
+    
+
+
