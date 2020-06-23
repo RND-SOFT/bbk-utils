@@ -87,7 +87,6 @@ publish:
   stage: deploy
   variables:
     GEM_REPOSITORY: 'http://nexus.rnds.local/repository/internal'
-    BUILDVERSION: ${CI_PIPELINE_ID}
   script:
     - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
   only:
