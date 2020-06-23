@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    aggredator-utils (0.1.1)
+    aggredator-utils (1.0.0)
       activesupport
       redis (~> 4.0)
       russian
