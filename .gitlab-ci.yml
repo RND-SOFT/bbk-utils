@@ -34,7 +34,7 @@ variables:
     GIT_BRANCH: ${CI_COMMIT_REF_NAME}
     GIT_COMMIT: ${CI_COMMIT_SHA}
   script:
-    - docker-compose build --force-rm --pull buildbase-${CASE}
+    - docker-compose build --force-rm --pull gemtestbase-${CASE}
     - docker-compose build --force-rm test-${CASE}
     - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${CASE}
 

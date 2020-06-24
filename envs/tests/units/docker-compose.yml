@@ -1,60 +1,57 @@
 version: "2.3"
 
-x-dockerfile: &df
+x-cache-build: &cb
+  context: ${PWD-./}
+  dockerfile: envs/tests/units/Dockerfile.base
+  cache_from:
+    - gemtestbase:2.5
+    - aggutils-tests:2.5
+    - gemtestbase:agg
+    - aggutils-tests:agg
+
+x-build: &build
   context: ${PWD-./}
   dockerfile: envs/tests/units/Dockerfile
 
 
 services:
-  buildbase-2.5:
+  gemtestbase-2.5:
     build:
-      <<: *df
-      target: buildbase
-      cache_from:
-        - buildbase:2.5
-        - aggutils-tests:2.5
+      <<: *cb
       args:
         BASE_IMAGE: ruby:2.5-alpine
-        BUILD_TAG: 2.5
         BUILDKIT_INLINE_CACHE: 1
-    image: buildbase:2.5
+    image: gemtestbase:2.5
     working_dir: /home/app
     
-  buildbase-agg:
+  gemtestbase-agg:
     build:
-      <<: *df
-      target: buildbase
-      cache_from:
-        - buildbase:agg
-        - aggutils-tests:agg
+      <<: *cb
       args:
         BASE_IMAGE: docker.rnds.pro/aggredator-ruby-base:latest
-        BUILD_TAG:  agg
         BUILDKIT_INLINE_CACHE: 1
-    image: buildbase:agg
+    image: gemtestbase:agg
     working_dir: /home/app
 
   test-2.5:
     build:
-      <<: *df
-      target: image
+      <<: *build
       args:
         BUILD_TAG: 2.5
         GEM_STORAGE_AUTH: ${NEXUS_AUTH-unknown}
     depends_on:
-      - buildbase-2.5
+      - gemtestbase-2.5
     image: aggutils-tests:2.5
     working_dir: /home/app
     
   test-agg:
     build:
-      <<: *df
-      target: image
+      <<: *build
       args:
         BUILD_TAG: agg
         GEM_STORAGE_AUTH: ${NEXUS_AUTH-unknown}
     depends_on:
-      - buildbase-agg
+      - gemtestbase-agg
     image: aggutils-tests:agg
     working_dir: /home/app
     

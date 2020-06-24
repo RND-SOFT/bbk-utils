@@ -1,16 +1,6 @@
-ARG BASE_IMAGE=ruby:2.5-alpine
 ARG BUILD_TAG=2.5
-
-FROM ${BASE_IMAGE} as buildbase
-ARG BUILDKIT_INLINE_CACHE=1
-
-WORKDIR /home/app
-
-RUN set -ex \
-  && apk add --no-cache build-base git curl postgresql-dev postgresql-client libstdc++ libxml2
-
   
-FROM buildbase:${BUILD_TAG} as image
+FROM gemtestbase:${BUILD_TAG} as image
 
 RUN mkdir -p /usr/local/etc \
   && { \
