@@ -24,6 +24,7 @@ vendor/cache
 .coverage
 coverage
 rspec*.xml
+.rspec_status
 clean.sh
 config.yaml
 base-service.yml
