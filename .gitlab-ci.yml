@@ -35,6 +35,7 @@ variables:
     GIT_COMMIT: ${CI_COMMIT_SHA}
   script:
     - docker-compose build --force-rm --pull gemtestbase-${CASE}
+    - ls -al
     - docker-compose build --force-rm test-${CASE}
     - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${CASE}
 
