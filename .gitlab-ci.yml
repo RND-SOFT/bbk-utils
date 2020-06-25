@@ -90,8 +90,9 @@ publish:
   script:
     - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
   only:
-    refs:
-      - master
+    - master
+    - /^v\d$/
+    - /^v\d\.\d$/
 
 
 badges:
