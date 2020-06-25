@@ -18,10 +18,10 @@ gem 'aggredator-utils'
 
 Затем:
 
-  $ bundle
+    $ bundle
 
 Или поставить в консоли:
 
-  $ gem sources --add http://nexus.rnds.local/repository/internal
-  $ gem install aggredator-utils
+    $ gem sources --add http://nexus.rnds.local/repository/internal
+    $ gem install aggredator-utils
 
