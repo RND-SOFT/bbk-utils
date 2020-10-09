@@ -21,7 +21,8 @@ module Aggredator
       super unless logger.respond_to?(method)
 
       if @tagged
-        logger.tagged(@tags) { logger.send(method, *args, &block) }
+        current_tags = tags - logger.formatter.current_tags
+        logger.tagged(current_tags) { logger.send(method, *args, &block) }
       else
         logger.send(method, *args, &block)
       end

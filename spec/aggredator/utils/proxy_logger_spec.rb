@@ -10,8 +10,7 @@ RSpec.describe Aggredator::ProxyLogger do
 
     it 'no tagging' do
       proxy.info(:message)
-
-      expect(output).not_to match(/#{tag}/)
+      expect(output.strip).to match("message")
     end
   end
 
@@ -20,14 +19,19 @@ RSpec.describe Aggredator::ProxyLogger do
 
     it 'simple tagging' do
       proxy.info(:message)
-      expect(output).to match(/#{tag}/)
+      expect(output.strip).to match("[#{tag}] message")
     end
 
     it 'add tags' do
       proxy.add_tags('tag2')
       proxy.info(:message)
-      expect(output).to match(/#{tag}/)
-      expect(output).to match(/tag2/)
+      expect(output.strip).to match("[#{tag}] [tag2] message")
     end
+
+    it 'tagged' do
+      proxy.tagged('tag3') {proxy.info(:message)}
+      expect(output.strip).to match("[#{tag}] [tag3] message")
+    end
+
   end
 end
