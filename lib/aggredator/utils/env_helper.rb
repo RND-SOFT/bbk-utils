@@ -16,9 +16,9 @@ module Aggredator
         uri.hostname  = env.fetch('DATABASE_HOST',    uri.hostname) || 'db'
         uri.port      = env.fetch('DATABASE_PORT',    uri.port) || 5432
 
-        name = env.fetch('DATABASE_NAME',    uri.path) || ''
-        name = "/#{name}" unless name.start_with?("/")
-        uri.path      = name
+        name = env.fetch('DATABASE_NAME', uri.path) || ''
+        name = "/#{name}" unless name.start_with?('/')
+        uri.path = name
       end
     end
 

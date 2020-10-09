@@ -1,16 +1,22 @@
 # frozen_string_literal: true
 
-require 'aggredator/utils/log_formatter'
 require 'logger'
+require 'active_support/tagged_logging'
+require 'aggredator/utils/log_formatter'
 
 module Aggredator
   class Logger < ::Logger
     DEFAULT_NAME = 'aggredator'
     DEFAULT_LEVEL = Logger::Severity::DEBUG
 
-    def initialize(progname, level)
-      STDOUT.sync = true
-      super(STDOUT)
+    def self.new(*args)
+      instance = super
+      ActiveSupport::TaggedLogging.new(instance)
+    end
+
+    def initialize(progname, level, io: STDOUT)
+      io.sync = true
+      super(io)
       self.progname = progname
 
       level = level.to_s.upcase
