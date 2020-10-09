@@ -29,8 +29,7 @@ module Aggredator
     end
 
     def respond_to_missing?(method_name, include_private = false)
-      logger.respond_to_missing?(method_name, include_private) || super
+      logger.send(:respond_to_missing?, method_name, include_private) || super
     end
-
   end
 end
