@@ -1,60 +1,76 @@
-before_script: &before_pipeline_script
-  # Install ssh-agent if not already installed, it is required by Docker.
-  # (change apt-get to yum if you use a CentOS-based image)
-  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+.sshagent: 
+  - &sshagent
+    which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
+    && eval $(ssh-agent -s)
+    && ssh-add <(echo "$SSH_PRIVATE_KEY")
 
-  # Run ssh-agent (inside the build environment)
-  - eval $(ssh-agent -s)
+.sshinit:
+  - &sshinit
+    mkdir -p ~/.ssh
+    && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >> ~/.ssh/config
+    && mkdir -p ~/.docker
+    && echo ${RNDS_DOCKER_AUTH} > ~/.docker/config.json
+    && echo "export DOCKERHOST=\`/sbin/ip route|awk '/default/ { print \$3 }'\`" >> /tmp/.variables
+    && source /tmp/.variables
 
-  # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
-  - ssh-add <(echo "$SSH_PRIVATE_KEY")
-
-  # For Docker builds disable host key checking. Be aware that by adding that
-  # you are suspectible to man-in-the-middle attacks.
-  # WARNING: Use this only with the Docker executor, if you use it with shell
-  # you will overwrite your user's SSH config.
-  - mkdir -p ~/.ssh
-  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-  - mkdir -p ~/.docker
+before_script:
+  - *sshagent
+  - *sshinit
 
 stages:
   - tests
   - build
-  - publish
-
+  - deploy
   
-test:
+variables:
+  BUILDVERSION: ${CI_PIPELINE_ID}
+
+.test:
   image: rnds/ruby:2.5-test
   stage: tests
   variables:
-    GITLAB: https://br.rnds.pro
+    COMPOSE_FILE: envs/tests/units/docker-compose.yml
+    COMPOSE_PROJECT_NAME: aggutils_${CI_PIPELINE_ID}_${CI_JOB_ID}
+    GIT_BRANCH: ${CI_COMMIT_REF_NAME}
+    GIT_COMMIT: ${CI_COMMIT_SHA}
   script:
-    - bundle install --jobs=3 --path vendor/bundle && bundle package --all
-    - bundle exec rspec
-    
-    - bundle audit update
-    - (cd rails && bundle audit) || true
-    - (cd rails && bundle outdated --only-explicit --no-pre --group default) || true
-    - rndslab.rb -t "$BOT_TOKEN" -j "$CI_PROJECT_ID" --badge "ruby -e \"require 'rubygems'; puts Gem::Specification::load('aggredator-utils.gemspec').version\"||version||blue?icon=ruby||https://br.rnds.pro/aggredator/gems/utils||126"
-    - rndslab.rb -t "$BOT_TOKEN" -j "$CI_PROJECT_ID" --badge "bundle outdated --only-explicit --no-pre --group default | grep '*' | wc -l||outdated||orange||https://br.rnds.pro/aggredator/gems/utils||127"
-    - rndslab.rb -t "$BOT_TOKEN" -j "$CI_PROJECT_ID" --badge "bundle audit | grep 'Name:' | sort | uniq | wc -l||vulnerable||red||https://br.rnds.pro/aggredator/gems/utils||128"
-    - rndslab.rb -t "$BOT_TOKEN" -j "$CI_PROJECT_ID" --badge "bundle exec rubycritic -f lint lib | tail -n 1 | cut -d ' ' -f2 ||quality||black||https://br.rnds.pro/aggredator/gems/utils||129"
-  cache:
+    - docker-compose build --force-rm --pull gemtestbase-${CASE}
+    - docker-compose build --force-rm test-${CASE}
+    - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${CASE}
+
+    - DOCKER_CONTAINER_ID=`docker-compose ps -q test-${CASE} | head -n 1`
+    - docker exec $DOCKER_CONTAINER_ID bundle exec rspec | tee .coverage
+    - docker cp $DOCKER_CONTAINER_ID:/home/app/coverage ./coverage
+    - docker cp $DOCKER_CONTAINER_ID:/home/app/rspec.xml rspec-${CASE}.xml
+  after_script:
+    - docker-compose down -v --remove-orphans
+  coverage: '/\(\d+.\d+\%\) covered/'
+  artifacts:
+    reports:
+      junit: rspec*.xml
+    name: "coverage"
     paths:
-      - vendor/bundle
-      - vendor/cache
+      - .coverage
+      - coverage
 
+ruby-2.5:
+  extends: .test
+  variables:
+    CASE: '2.5'
 
+ruby-agg:
+  extends: .test
+  variables:
+    CASE: 'agg'
+  
 build:
   image: rnds/ruby:2.5-test
   stage: build
-  variables:
-    BUILDVERSION: ${CI_PIPELINE_ID}
   script:
+    - gem sources --add http://${GEM_STORAGE_CREDS}@nexus.rnds.local/repository/internal/
     - bundle install --jobs=3 --path vendor/bundle && bundle package --all
     - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'` 
   cache:
-    policy: pull
     paths:
       - vendor/bundle
       - vendor/cache
@@ -62,16 +78,46 @@ build:
     name: "gem"
     paths:
       - ./*.gem
+      - coverage/*
+      - rubycritic/*
+
 
 publish:
   image: rnds/ruby:2.5-test
-  stage: publish
+  stage: deploy
   variables:
     GEM_REPOSITORY: 'http://nexus.rnds.local/repository/internal'
-    BUILDVERSION: ${CI_PIPELINE_ID}
   script:
-    - gem install nexus
     - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
   only:
-    refs:
-      - master
+    - master
+    - /^v\d$/
+    - /^v\d\.\d$/
+
+
+badges:
+  image: rnds/ruby:2.5-test
+  stage: deploy
+  allow_failure: true
+  variables:
+    BRANCH_LOCK: ci/${CI_PROJECT_NAME}/${CI_COMMIT_REF_SLUG}
+    ENV_LOCK: ci/${CI_PROJECT_NAME}/${CI_ENVIRONMENT_SLUG}
+    BADGES_URL: https://lysander.x.rnds.pro/api/v1/badges/aggutils
+  script:
+    - bundle audit update
+    - bundle audit || true
+    - bundle outdated --only-explicit --no-pre --group default || true
+
+    - version=$(ruby -e "require 'rubygems'; puts Gem::Specification::load('aggredator-utils.gemspec').version") || true
+    - vulnerable=$(bundle audit | grep "Name:" | sort | uniq | wc -l) || true
+    - outdated=$(bundle outdated --only-explicit --no-pre --group default | grep "*" | wc -l) || true
+    - quality=$(rubycritic -f lint lib | tail -n 1 | cut -d ' ' -f2) || true
+    - coverage=$(cat .coverage | ruby -e 'puts /\((\d+.\d+)\%\) covered/.match(STDIN.read)[1]') || true
+
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"version\", \"color\":\"blue\", \"icon\":\"ruby&logoColor\", \"message\":\"${version}\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_version.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"vulnerable\", \"color\":\"red\", \"message\":\"${vulnerable} gems\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_vulnerable.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"outdated\", \"color\":\"orange\", \"message\":\"${outdated} gems\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_outdated.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"quality\", \"color\":\"lightgray\", \"message\":\"${quality}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_quality.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"coverage\", \"color\":\"brightgreen\", \"message\":\"${coverage}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_coverage.json" || true
+  only: 
+    - master

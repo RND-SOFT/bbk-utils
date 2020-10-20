@@ -1,23 +1,23 @@
-require "bundler/setup"
+ENV['RAILS_ENV'] ||= 'test'
+
 require 'simplecov'
 require 'simplecov-console'
-require 'securerandom'
-require 'active_support/all'
-require 'faker'
 
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
-  SimpleCov::Formatter::HTMLFormatter,
-  SimpleCov::Formatter::Console
-])
+                                                                 SimpleCov::Formatter::HTMLFormatter, # for gitlab
+                                                                 SimpleCov::Formatter::Console # for developers
+                                                               ])
+                                                               
+SimpleCov.start
 
+require 'bundler'
+require "bundler/setup"
+Bundler.require(:default, :development, :test)
 
-SimpleCov.start do
-  add_filter do |source_file|
-    source_file.filename.start_with? File.join(Dir.pwd, 'spec')
-  end
-end
+Aggredator::Utils.logger = ::Logger.new(IO::NULL)
 
-require "aggredator/utils"
+$root = File.join(File.dirname(__dir__), 'spec')
+Dir[File.join(__dir__, 'support', '**', '*.rb')].sort.each { |f| require f}
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -31,4 +31,3 @@ RSpec.configure do |config|
   end
 end
 
-Dir["./spec/support/**/*.rb"].sort.each {|f| require f}
