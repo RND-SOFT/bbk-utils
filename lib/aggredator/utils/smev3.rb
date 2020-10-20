@@ -11,7 +11,8 @@ module Aggredator
 
       def self.build_incoming_type(name, href)
         href_uri = URI.parse(href)
-        href_slug = [href_uri.scheme, href_uri.host, *href_uri.path.gsub('.', '-').split('/')].select(&:present?).join('-')  
+        # href_slug = [href_uri.scheme, href_uri.host, *href_uri.path.gsub('.', '-').split('/')].select(&:present?).join('-')
+        href_slug = [href_uri.scheme, href_uri.host, *href_uri.path.split('/'), href_uri.query].select(&:present?).join('-').gsub(/[\.&]/, '-')
         Russian.translit "#{name}_#{href_slug}"
       end
 
