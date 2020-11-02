@@ -123,7 +123,8 @@ module Aggredator
       def process(source, item)
         content = source.fetch(item[:env], item[:default])
   
-        if content.present?
+        # Если данные есть, либо указан тип (нужно для того чтобы переменная была нужного типа)
+        if content.present? || item[:type].present?
           if file = item[:file]
             dirname = File.dirname(file)
             FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
