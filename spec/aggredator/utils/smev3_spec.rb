@@ -27,4 +27,9 @@ RSpec.describe Aggredator::Smev3 do
 
   end
 
+  it 'build mtom attachment id' do
+    id = described_class.build_mtom_attachment_id
+    expect(described_class::MTOM_ID_FIRST_LETTERS).to include(id[0])
+  end
+
 end
