@@ -42,6 +42,8 @@ module Aggredator
         uri.scheme   = 'amqps'
         uri.hostname = env.fetch('MQ_HOST', uri.hostname) || 'mq'
         uri.port     = env.fetch('MQ_PORT', uri.port) || 5671
+        uri.user     = env.fetch('MQ_USER', uri.user)
+        uri.password = env.fetch('MQ_PASS', uri.password)
 
         vhost = [env.fetch('MQ_VHOST', uri.path), '/'].find(&:present?)
         vhost = "/#{vhost}" unless vhost.start_with?('/')
@@ -54,6 +56,8 @@ module Aggredator
       env['MQ_URL']   = uri.to_s
       env['MQ_HOST']  = uri.hostname
       env['MQ_PORT']  = uri.port.to_s
+      env['MQ_PASS']  = uri.password
+      env['MQ_USER']  = uri.user
       vhost = if uri.path == '/'
                 uri.path
               else

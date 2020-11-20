@@ -60,6 +60,14 @@ RSpec.describe Aggredator::EnvHelper do
       [
         { 'MQ_HOST': 'rabbit', 'MQ_PORT': '42000', 'MQ_VHOST': 'vhost' },
         { 'MQ_URL': 'amqps://rabbit:42000/vhost' }
+      ],
+      [
+        { 'MQ_HOST': 'rabbit', 'MQ_USER': 'admin' },
+        { 'MQ_URL': 'amqps://admin@rabbit:5671/' }
+      ],
+      [
+        { 'MQ_PASS': 'admin', 'MQ_URL': 'amqps://admin:invalid@rabbit:5671/test' },
+        { 'MQ_URL': 'amqps://admin:admin@rabbit:5671/test', 'MQ_USER': 'admin' }
       ]
     ].each do |params, expected|
       it "params #{params}" do
