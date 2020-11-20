@@ -19,7 +19,7 @@ RSpec.describe Aggredator::EnvHelper do
       { env: { 'DATABASE_PASS' => 'p1' },       result: { user: 'postgres', pass: 'p1', host: 'db', port: '5432', name: '', adapter: 'postgresql' } },
       { env: { 'DATABASE_HOST' => 'h1' },       result: { user: 'postgres', pass: nil,  host: 'h1', port: '5432', name: '', adapter: 'postgresql' } },
       { env: { 'DATABASE_PORT' => '4321' },     result: { user: 'postgres', pass: nil,  host: 'db', port: '4321', name: '', adapter: 'postgresql' } },
-      { env: { 'DATABASE_NAME' => 'tmp' },      result: { user: 'postgres', pass: nil,  host: 'db', port: '5432', name: 'tmp',    adapter: 'postgresql' } }
+      { env: { 'DATABASE_NAME' => 'tmp' },      result: { user: 'postgres', pass: nil,  host: 'db', port: '5432', name: 'tmp', adapter: 'postgresql' } }
     ] }
   ].freeze
 
@@ -39,12 +39,31 @@ RSpec.describe Aggredator::EnvHelper do
         let(:url) { ex[:url] }
 
         ex[:variants].each_with_index do |variant, j|
-          it "#{j} #{variant[:env].to_s}" do
+          it "#{j} #{variant[:env]}" do
             env = variant[:env].merge('DATABASE_URL' => url)
             env = Aggredator::EnvHelper.prepare_database_envs(env)
             match_env(env, variant[:result])
           end
         end
+      end
+    end
+  end
+
+  context 'mq envs' do
+    CASES = [
+      [{}, { 'MQ_URL': 'amqps://mq:5671/', 'MQ_HOST': 'mq', 'MQ_PORT': '5671', 'MQ_VHOST': '/' }],
+      [{ 'MQ_URL': 'amqps://mq:5671' }, { 'MQ_HOST': 'mq', 'MQ_PORT': '5671', 'MQ_VHOST': '/' }],
+      [
+        { 'MQ_URL': 'amqps://mq:5671', 'MQ_VHOST': 'test', 'MQ_PORT': '15671' },
+        { 'MQ_URL': 'amqps://mq:15671/test', 'MQ_HOST': 'mq', 'MQ_PORT': '15671', 'MQ_VHOST': 'test' }
+      ],
+      [
+        { 'MQ_HOST': 'rabbit', 'MQ_PORT': '42000', 'MQ_VHOST': 'vhost' },
+        { 'MQ_URL': 'amqps://rabbit:42000/vhost' }
+      ]
+    ].each do |params, expected|
+      it "params #{params}" do
+        expect(Aggredator::EnvHelper.prepare_mq_envs(params.stringify_keys)).to include(expected.stringify_keys)
       end
     end
   end
