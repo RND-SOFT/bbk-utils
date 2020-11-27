@@ -173,14 +173,22 @@ RSpec.describe Aggredator::Config do
 
       result = %{
 Environment variables:
-   File <FILE1>               -> "some/folder/file.1"
-   File <FILE2>               -> "some/folder/file.2" file2 description
+   File <FILE1>
+      -> "some/folder/file.1"
+   File <FILE2>                                    file2 description
+      -> "some/folder/file.2"
    <REQUIRED_VAR>
+      -> "req_val1"
    <REQUIRED_VAR_DESC>                             desc1
+      -> "req_val_desc1"
    [OPTIONAL_VAR]
+      -> nil
    [OPTIONAL_VAR_DESC]                             desc2
+      -> "opt_val_desc1"
    [OPTIONAL_VAR2] (=default1)
+      -> "default1"
    [OPTIONAL_VAR2_DESC] (=default1)                desc3
+      -> "opt_val_desc2"
 }
 
       expect(sort_output(config.to_s)).to eq(sort_output(result))

@@ -19,10 +19,14 @@ module Aggredator
       super(io)
       self.progname = progname
 
-      level = level.to_s.upcase
-      level = level.present? ? level : 'INFO'
+      if level.is_a?(Integer)
+        self.level = level
+      else
+        level = level.to_s.upcase
+        level = level.present? ? level : 'INFO'
+        self.level = Logger.const_get(level)
+      end
 
-      self.level = Logger.const_get(level)
       self.formatter = LogFormatter.new
       info "Using LOG_LEVEL=#{level}"
     end

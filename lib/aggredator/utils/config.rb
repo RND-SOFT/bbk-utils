@@ -154,23 +154,26 @@ module Aggredator
   
       def print_file_item(item, padding)
         line = padding + 'File ' + wrap_required(item)
-        line = line.ljust(30) + '-> ' + "\"#{item[:file]}\""
-        if item[:desc].present?
+        line = if item[:desc].present?
           line.ljust(50) + ' ' + item[:desc]
         else
           line
         end
+
+        line + "\n" + (padding * 2) + "-> " + item[:file].inspect
       end
   
       def print_item(item, padding)
         line = padding + wrap_required(item)
         line += " (=#{item[:default]})" if item[:default].present?
   
-        if item[:desc].present?
+        line = if item[:desc].present?
           line.ljust(50) + ' ' + item[:desc]
         else
           line
         end
+
+        line + "\n" + (padding * 2) + "-> " + item[:value].inspect
       end
   
       def wrap_required(item)
