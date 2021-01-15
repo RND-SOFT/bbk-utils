@@ -14,7 +14,7 @@ module Aggredator
     class << self
       attr_accessor :logger
 
-      def gracefully_main(&block)
+      def gracefully_main
         yield
         0
       rescue SignalException => e
@@ -28,8 +28,6 @@ module Aggredator
         logger.error "Exception: #{e.inspect}. Backtrace: #{e.backtrace.inspect}"
         1
       end
-  
-
     end
 
     self.logger = ::Logger.new(STDOUT)

@@ -2,12 +2,11 @@ require 'tempfile'
 require 'openssl'
 
 RSpec.describe Aggredator::Crypt do
-
   def generate_cert(cn, cacert: nil, cakey: nil)
     key = OpenSSL::PKey::RSA.new 2048
     pub_key = key.public_key
     subject = "/CN=#{cn}"
-    
+
     cert = OpenSSL::X509::Certificate.new
     cert.subject = OpenSSL::X509::Name.parse subject
     cert.not_before = Time.now
@@ -21,7 +20,7 @@ RSpec.describe Aggredator::Crypt do
     ef.issuer_certificate = cacert || cert
 
     cert.sign cakey || key, OpenSSL::Digest::SHA1.new
-    return key, cert
+    [key, cert]
   end
 
   around(:each) do |example|
@@ -31,7 +30,7 @@ RSpec.describe Aggredator::Crypt do
     @cacert = Tempfile.new
     @cacert.write ca_cert.to_pem
     @cacert.flush
- 
+
     @key = Tempfile.new
     @key.write key.to_pem
     @key.flush
@@ -43,9 +42,7 @@ RSpec.describe Aggredator::Crypt do
     example.run
   end
 
-
   context 'full check' do
-  
     before(:each) do
       expect(described_class).to receive(:valid_key_cert?).and_call_original
       expect(described_class).to receive(:valid_cert_sign?).and_call_original
@@ -56,19 +53,16 @@ RSpec.describe Aggredator::Crypt do
       expect(errors).to be_nil
     end
 
-    it 'errors' do 
+    it 'errors' do
       key_file, cert_file = generate_cert('invalid').map do |obj|
         f = Tempfile.new
         f.write obj.to_pem
         f.flush
-        f 
+        f
       end
       errors = described_class.full_check(key_file.path, cert_file.path, @cacert.path)
       expect(errors).to be_a Array
       expect(errors.size).to eq 1
     end
   end
-
-  
-
 end

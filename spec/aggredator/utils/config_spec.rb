@@ -1,7 +1,7 @@
 require 'tmpdir'
 
 RSpec.describe Aggredator::Config do
-  let(:config){ described_class.new }
+  let(:config) { described_class.new }
 
   around :each do |example|
     Dir.mktmpdir do |dir|
@@ -16,9 +16,9 @@ RSpec.describe Aggredator::Config do
       expect(described_class.instance).to be_a(described_class)
     end
 
-    [:map, :require, :optional, :run!, :[], :[]=, :content, :to_s].each do |method|
+    %i[map require optional run! \[\] \[\]= content to_s].each do |method|
       it method.to_s do
-        arity = described_class.new.method(method).parameters.select{|k, _v| k == :req }.count
+        arity = described_class.new.method(method).parameters.select { |k, _v| k == :req }.count
         args = arity.times.map(&:to_s)
         expect(described_class.instance).to receive(method)
         described_class.send(method, *args)
@@ -27,8 +27,8 @@ RSpec.describe Aggredator::Config do
   end
 
   describe 'File mapping' do
-    let(:file){ Faker::File.file_name(dir: 'some/path') }
-    let(:content){ Faker::Ancient.hero }
+    let(:file) { Faker::File.file_name(dir: 'some/path') }
+    let(:content) { Faker::Ancient.hero }
 
     it 'optional file can be skipped' do
       config.map('FILE_ENV', file, required: false)
@@ -74,7 +74,7 @@ RSpec.describe Aggredator::Config do
   end
 
   describe 'Env parsing' do
-    let(:value){ Faker::Ancient.hero }
+    let(:value) { Faker::Ancient.hero }
 
     it 'optional variable' do
       config.optional('OPTIONAL')
@@ -135,7 +135,6 @@ RSpec.describe Aggredator::Config do
       config.run!(env)
       expect(config['OPTIONAL']).to eq 'value'
     end
-
   end
 
   describe 'Example' do
@@ -195,4 +194,3 @@ Environment variables:
     end
   end
 end
-

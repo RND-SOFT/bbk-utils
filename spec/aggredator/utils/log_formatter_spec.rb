@@ -1,8 +1,7 @@
 RSpec.describe Aggredator::LogFormatter do
-
   let(:progname) { SecureRandom.hex }
   let(:severity) { Logger::Severity.constants.map(&:to_s).sample }
-  let(:time) { Time.now - (1 + Random.rand(42)).minutes }
+  let(:time) { Time.now - Random.rand(1..42).minutes }
   let(:message) { SecureRandom.hex }
 
   subject { described_class.new }
@@ -23,5 +22,4 @@ RSpec.describe Aggredator::LogFormatter do
     expect(parts.first).to eq Thread.current.object_id.to_s
     expect(parts.last).to eq Thread.current.name
   end
-
 end

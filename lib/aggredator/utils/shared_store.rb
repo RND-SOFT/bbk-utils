@@ -9,21 +9,21 @@ module Aggredator
       @key = key
       @default = block
     end
-  
+
     def fetch
       @store.fetch(@key) do
         @default.call
       end
     end
-  
-    def write value
+
+    def write(value)
       @store.write(@key, value)
     end
-  
+
     def clear
       @store.delete(@key)
     end
-  
+
     def build_store(redis)
       if redis.is_a?(String)
         ActiveSupport::Cache::RedisCacheStore.new(host: redis, connect_timeout: 1, read_timeout: 1, write_timeout: 1)
@@ -31,5 +31,5 @@ module Aggredator
         ActiveSupport::Cache::RedisCacheStore.new(redis: redis, connect_timeout: 1, read_timeout: 1, write_timeout: 1)
       end
     end
-  end  
+  end
 end

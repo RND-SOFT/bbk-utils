@@ -7,21 +7,21 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
                                                                  SimpleCov::Formatter::HTMLFormatter, # for gitlab
                                                                  SimpleCov::Formatter::Console # for developers
                                                                ])
-                                                               
+
 SimpleCov.start
 
 require 'bundler'
-require "bundler/setup"
+require 'bundler/setup'
 Bundler.require(:default, :development, :test)
 
 Aggredator::Utils.logger = ::Logger.new(IO::NULL)
 
 $root = File.join(File.dirname(__dir__), 'spec')
-Dir[File.join(__dir__, 'support', '**', '*.rb')].sort.each { |f| require f}
+Dir[File.join(__dir__, 'support', '**', '*.rb')].sort.each { |f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
-  config.example_status_persistence_file_path = ".rspec_status"
+  config.example_status_persistence_file_path = '.rspec_status'
 
   # Disable RSpec exposing methods globally on `Module` and `main`
   config.disable_monkey_patching!
@@ -30,4 +30,3 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
-

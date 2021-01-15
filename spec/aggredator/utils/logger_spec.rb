@@ -34,6 +34,6 @@ RSpec.describe Aggredator::Logger do
   end
 
   it 'ActiveSupport::TaggedLogging' do
-    expect(described_class.new progname, nil, io: io).to be_an(ActiveSupport::TaggedLogging)
+    expect(described_class.new(progname, nil, io: io)).to be_an(ActiveSupport::TaggedLogging)
   end
 end
