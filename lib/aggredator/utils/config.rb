@@ -70,7 +70,12 @@ module Aggredator
     end
 
     def fetch(key, default = nil)
-      store.fetch(key.to_s.upcase, default)
+      # store.fetch(key.to_s.upcase, default)
+      if (field = store[key.to_s.upcase]).present? && field.key?(:value)
+        field[:value]
+      else
+        default
+      end
     end
 
     def to_s

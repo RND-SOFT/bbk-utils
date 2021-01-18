@@ -193,4 +193,23 @@ Environment variables:
       expect(sort_output(config.to_s)).to eq(sort_output(result))
     end
   end
+
+  context '#fetch' do
+    before(:each) do
+      config.optional('TEST', default: :default)
+    end
+
+    it 'get value from not builded config' do
+      expect(config.fetch('TEST', :value)).to eq :value
+    end
+
+    it 'get value from builded config' do
+      config.run!
+      expect(config.fetch('TEST')).to eq :default
+    end
+
+    it 'get default' do
+      expect(config.fetch('invalid key', :value)).to eq :value
+    end
+  end
 end
