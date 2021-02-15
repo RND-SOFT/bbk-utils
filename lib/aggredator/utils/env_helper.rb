@@ -24,6 +24,13 @@ module Aggredator
         name = env.fetch('DATABASE_NAME', uri.path) || ''
         name = "/#{name}" unless name.start_with?('/')
         uri.path = name
+
+        if uri.query
+          params = URI.decode_www_form(uri.query).to_h
+          params['pool'] = env.fetch('DATABASE_POOL', params['pool'])
+          uri.query = URI.encode_www_form(params)
+        end
+
       end
     end
 
@@ -35,6 +42,12 @@ module Aggredator
       env['DATABASE_HOST'] = uri.hostname
       env['DATABASE_PORT'] = uri.port.to_s
       env['DATABASE_NAME'] = uri.path[1..-1]
+
+      if uri.query
+        params = URI.decode_www_form(uri.query).to_h
+        env['DATABASE_POOL'] = params['pool']
+      end
+
     end
 
     def self.build_mq_uri_with_defaults(env)
