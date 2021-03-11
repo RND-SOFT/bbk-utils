@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'uri'
 
 module Aggredator
   module EnvHelper
@@ -14,7 +15,7 @@ module Aggredator
     end
 
     def self.build_uri_with_defaults(env)
-      URI.parse(env['DATABASE_URL'] || '').tap do |uri|
+      ::URI.parse(env['DATABASE_URL'] || '').tap do |uri|
         uri.scheme    = env.fetch('DATABASE_ADAPTER', uri.scheme) || 'postgresql'
         uri.user      = env.fetch('DATABASE_USER',    uri.user) || 'postgres'
         uri.password  = env.fetch('DATABASE_PASS',    uri.password)
