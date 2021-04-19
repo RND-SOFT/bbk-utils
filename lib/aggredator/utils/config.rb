@@ -62,7 +62,7 @@ module Aggredator
 
     def content(key)
       item = @store[normalize_key(key)]
-      if file = item[:file]
+      if (file = item[:file])
         File.read(file)
       else
         item[:value]
@@ -147,6 +147,14 @@ module Aggredator
       else
         required!(item) if item[:required]
       end
+    rescue => e
+      msg = "Failed processing #{item[:env]} parameter. #{e.inspect}"
+      if $logger
+        $logger.error msg
+      else
+        puts msg
+      end
+      raise
     end
 
     def required!(item)
