@@ -135,6 +135,27 @@ RSpec.describe Aggredator::Config do
       config.run!(env)
       expect(config['OPTIONAL']).to eq 'value'
     end
+
+    it 'default false value' do
+      config.optional('KEY', default: false, bool: true)
+      config.run!({})
+      expect(config['KEY']).to eq false
+    end
+
+    it 'call initialize from passed type' do
+      cls = Class.new do
+        attr_reader :value
+        def initialize(value)
+          @value = value
+        end
+      end
+      config.optional('KEY', type: cls)
+      value = SecureRandom.hex
+      config.run!({'KEY' => value})
+      expect(config['KEY']).to be_a(cls)
+      expect(config['KEY'].value).to eq value
+    end
+
   end
 
   describe 'Example' do

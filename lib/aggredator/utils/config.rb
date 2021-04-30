@@ -2,6 +2,28 @@ module Aggredator
   class Config
     attr_accessor :store, :name
 
+    class BooleanCaster
+    
+      FALSE_VALUES = [
+        false, 0,
+        "0", :"0",
+        "f", :f,
+        "F", :F,
+        "false", :false,
+        "FALSE", :FALSE,
+        "off", :off,
+        "OFF", :OFF,
+      ].to_set.freeze
+
+      def self.cast(value)
+        if value.nil? || value == ''
+          nil
+        else
+          !FALSE_VALUES.include?(value)
+        end
+      end
+    end
+
     def self.instance
       @instance ||= new
     end
@@ -26,6 +48,9 @@ module Aggredator
     end
 
     def require(env, desc: nil, bool: false, type: nil, key: nil)
+      raise ArgumentError.new('Specified type and bool') if bool && type.present?
+
+      type = Aggredator::Config::BooleanCaster.singleton_method(:cast) if bool
       @store[env.to_s.upcase] = {
         env: (key || env).to_s.upcase,
         required: true,
@@ -36,12 +61,14 @@ module Aggredator
     end
 
     def optional(env, default: nil, desc: nil, bool: false, type: nil, key: nil)
+      raise ArgumentError.new('Specified type and bool') if bool && type.present?
+
+      type = Aggredator::Config::BooleanCaster.singleton_method(:cast) if bool
       @store[env.to_s.upcase] = {
         env: (key || env).to_s.upcase,
         required: false,
         default: default,
         desc: desc,
-        bool: bool,
         type: type
       }
     end
@@ -132,9 +159,7 @@ module Aggredator
           File.write(file, content)
           item[:value] = file
         else
-          item[:value] = if item[:bool]
-                           ActiveRecord::Type::Boolean.new.cast(content || false)
-                         elsif type = item[:type]
+          item[:value] = if (type = item[:type])
                            if type.respond_to? :call
                              type.call(content)
                            else
