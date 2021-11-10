@@ -52,23 +52,33 @@ module Aggredator
     end
 
     def self.build_mq_uri_with_defaults(env)
-      URI.parse(env['MQ_URL'] || '').tap do |uri|
-        uri.scheme   = 'amqps'
-        uri.hostname = env.fetch('MQ_HOST', uri.hostname) || 'mq'
-        uri.port     = env.fetch('MQ_PORT', uri.port) || 5671
-        uri.user     = env.fetch('MQ_USER', uri.user)
-        uri.password = env.fetch('MQ_PASS', uri.password)
+      # Only first MQ_URL selected as template if any
+      url = [env.fetch('MQ_URL', '').split(/[;\|]/)].flatten.select(&:present?).first || ''
 
-        vhost = [env.fetch('MQ_VHOST', uri.path), '/'].find(&:present?)
-        vhost = "/#{vhost}" unless vhost.start_with?('/')
+      # all hosts if form of list fills url template
+      hosts = [env.fetch('MQ_HOST', URI.parse(url).hostname || 'mq').split(/[;\|]/)].flatten.select(&:present?).uniq
 
-        uri.path = vhost
+      hosts.map do |host|
+        URI.parse(url).tap do |uri|
+          uri.scheme   = uri.scheme || 'amqps'
+          uri.hostname = host
+          uri.port     = env.fetch('MQ_PORT', uri.port) || 5671
+          uri.user     = env.fetch('MQ_USER', uri.user)
+          uri.password = env.fetch('MQ_PASS', uri.password)
+
+          vhost = [env.fetch('MQ_VHOST', uri.path), '/'].find(&:present?)
+          vhost = "/#{vhost}" unless vhost.start_with?('/')
+
+          uri.path = vhost
+        end
       end
     end
 
-    def self.apply_mq_env_from_uri(env, uri)
-      env['MQ_URL']   = uri.to_s
-      env['MQ_HOST']  = uri.hostname
+    def self.apply_mq_env_from_uri(env, uris)
+      uri = uris.first
+
+      env['MQ_URL']   = uris.map(&:to_s).join(';')
+      env['MQ_HOST']  = uris.map(&:hostname).join(';')
       env['MQ_PORT']  = uri.port.to_s
       env['MQ_PASS']  = uri.password
       env['MQ_USER']  = uri.user
