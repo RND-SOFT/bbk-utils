@@ -1,3 +1,4 @@
+require 'active_support'
 require 'active_support/core_ext'
 require 'russian'
 require 'aggredator/utils/config'
