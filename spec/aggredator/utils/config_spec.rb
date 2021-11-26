@@ -129,6 +129,12 @@ RSpec.describe Aggredator::Config do
       expect(config['OPTIONAL']).to eq 'value2'
     end
 
+    it 'blank default value' do
+      config.optional('OPTIONAL', default: '')
+      config.run!({})
+      expect(config['OPTIONAL']).to eq ''
+    end
+
     it 'check specific env key' do
       config.optional('OPTIONAL', key: 'key')
       env = { 'KEY' => 'value' }

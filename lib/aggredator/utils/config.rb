@@ -169,8 +169,10 @@ module Aggredator
                            content
                          end
         end
+      elsif item[:required]
+        required!(item)
       else
-        required!(item) if item[:required]
+        item[:value] = content
       end
     rescue => e
       msg = "Failed processing #{item[:env]} parameter. #{e.inspect}"
