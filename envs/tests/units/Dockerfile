@@ -1,4 +1,4 @@
-ARG BUILD_TAG=2.5
+ARG BUILD_TAG=3.0
   
 FROM gemtestbase:${BUILD_TAG} as image
 
@@ -11,17 +11,11 @@ RUN mkdir -p /usr/local/etc \
 
 WORKDIR /home/app
 
-ARG GEM_STORAGE_AUTH
-
-ENV BUNDLE_NEXUS__RNDS__LOCAL ${GEM_STORAGE_AUTH}
-
 ADD Gemfile Gemfile.lock *.gemspec /home/app/
-ADD lib/aggredator/utils/version.rb /home/app/lib/aggredator/utils/
+ADD lib/bbk/utils/version.rb /home/app/lib/bbk/utils/
 
 RUN set -ex \
-  && gem source --add http://${GEM_STORAGE_AUTH}@nexus.rnds.local/repository/internal/ \
   && gem install bundler && gem update bundler \
-  && ping -c 1 nexus.rnds.local \
   && bundle install --jobs=3 --full-index \
   && rm -rf /tmp/* /var/tmp/* /usr/src/ruby /root/.gem /usr/local/bundle/cache
 

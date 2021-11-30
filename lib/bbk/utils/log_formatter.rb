@@ -1,6 +1,6 @@
 require 'logger'
 
-module Aggredator
+module BBK
   class LogFormatter < ::Logger::Formatter
     FORMAT = "%5s [%sUTC #%d] (%s)[%s]: %s\n".freeze
     def call(severity, time, progname, msg)

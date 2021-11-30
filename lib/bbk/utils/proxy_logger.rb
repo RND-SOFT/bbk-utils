@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'aggredator/utils/logger'
+require 'bbk/utils/logger'
 
-module Aggredator
+module BBK
   class ProxyLogger
     attr_reader :tags, :logger
 

@@ -1,7 +1,7 @@
 require 'tempfile'
 require 'openssl'
 
-RSpec.describe Aggredator::Crypt do
+RSpec.describe BBK::Crypt do
   def generate_cert(cn, cacert: nil, cakey: nil)
     key = OpenSSL::PKey::RSA.new 2048
     pub_key = key.public_key

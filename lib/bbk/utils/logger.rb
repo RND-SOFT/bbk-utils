@@ -2,11 +2,11 @@
 
 require 'logger'
 require 'active_support/tagged_logging'
-require 'aggredator/utils/log_formatter'
+require 'bbk/utils/log_formatter'
 
-module Aggredator
+module BBK
   class Logger < ::Logger
-    DEFAULT_NAME = 'aggredator'
+    DEFAULT_NAME = 'bbk'
     DEFAULT_LEVEL = Logger::Severity::DEBUG
 
     def self.new(*args)

@@ -1,6 +1,6 @@
 require 'tmpdir'
 
-RSpec.describe Aggredator::Config do
+RSpec.describe BBK::Config do
   let(:config) { described_class.new }
 
   around :each do |example|

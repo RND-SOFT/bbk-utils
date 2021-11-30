@@ -1,4 +1,4 @@
-RSpec.describe Aggredator::ProxyLogger do
+RSpec.describe BBK::ProxyLogger do
   let(:progname) { SecureRandom.hex }
   let(:io) { StringIO.new('') }
   let(:output) { io.string }

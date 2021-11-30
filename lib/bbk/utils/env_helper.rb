@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'uri'
 
-module Aggredator
+module BBK
   module EnvHelper
     def self.prepare_database_envs(env)
       uri = build_uri_with_defaults(env)

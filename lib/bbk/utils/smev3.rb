@@ -1,6 +1,6 @@
 require 'securerandom'
 
-module Aggredator
+module BBK
   module Smev3
     MTOM_ID_FIRST_LETTERS = %w[a b c d e f].freeze
 

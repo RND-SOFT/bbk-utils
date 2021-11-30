@@ -1,6 +1,6 @@
 require 'openssl'
 
-module Aggredator
+module BBK
   class Crypt
     def self.full_check(key_path, cert_path, *cacert_chain)
       errors = []

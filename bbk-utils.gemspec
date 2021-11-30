@@ -1,15 +1,15 @@
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'aggredator/utils/version'
+require 'bbk/utils/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'aggredator-utils'
-  spec.version       = ENV['BUILDVERSION'].to_i > 0 ? "#{Aggredator::Utils::VERSION}.#{ENV['BUILDVERSION'].to_i}" : Aggredator::Utils::VERSION
+  spec.name          = 'bbk-utils'
+  spec.version       = ENV['BUILDVERSION'].to_i > 0 ? "#{BBK::Utils::VERSION}.#{ENV['BUILDVERSION'].to_i}" : BBK::Utils::VERSION
   spec.authors       = ['Samoilenko Yuri']
   spec.email         = ['kinnalru@gmail.com']
 
-  spec.summary       = 'Support classes for aggredator services'
-  spec.description   = 'Support classes for aggredator services'
+  spec.summary       = 'Support classes for BBK stack'
+  spec.description   = 'Support classes for BBK stack'
 
   spec.files         = Dir['bin/*', 'lib/**/*', 'Gemfile*', 'LICENSE.txt', 'README.md']
   spec.bindir        = 'bin'
@@ -20,8 +20,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'activesupport'
-  spec.add_runtime_dependency 'redis', '~> 4.0'
-  spec.add_runtime_dependency 'russian'
 
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'faker', '~> 2.4'
@@ -29,7 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
 
   spec.add_development_dependency 'byebug'
-  spec.add_development_dependency 'mock_redis'
   spec.add_development_dependency 'rspec_junit_formatter'
   spec.add_development_dependency 'rubycritic'
   spec.add_development_dependency 'simplecov'

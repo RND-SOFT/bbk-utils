@@ -1,4 +1,4 @@
-RSpec.describe Aggredator::Logger do
+RSpec.describe BBK::Logger do
   let(:progname) { SecureRandom.hex }
   let(:io) { StringIO.new('') }
   let(:output) { io.string }
@@ -8,14 +8,14 @@ RSpec.describe Aggredator::Logger do
     logger = described_class.new progname, :debug, io: io
     expect(output).to match(/Using LOG_LEVEL/)
     expect(logger.level).to eq Logger::DEBUG
-    expect(logger.formatter).to be_a Aggredator::LogFormatter
+    expect(logger.formatter).to be_a BBK::LogFormatter
   end
 
   it 'default log level info' do
     logger = described_class.new progname, nil, io: io
     expect(output).to match(/Using LOG_LEVEL/)
     expect(logger.level).to eq Logger::INFO
-    expect(logger.formatter).to be_a Aggredator::LogFormatter
+    expect(logger.formatter).to be_a BBK::LogFormatter
   end
 
   it 'tagged' do

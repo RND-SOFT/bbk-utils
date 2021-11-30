@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Aggredator::EnvHelper do
+RSpec.describe BBK::EnvHelper do
   ENV_EXAMPLES = [
     { url: 'postgresql://user:pass@db:1234/dbname?pool=15', variants: [
       { env: {}, result: { user: 'user', pass: 'pass', host: 'db', port: '1234', name: 'dbname', adapter: 'postgresql' } },
@@ -41,7 +41,7 @@ RSpec.describe Aggredator::EnvHelper do
         ex[:variants].each_with_index do |variant, j|
           it "#{j} #{variant[:env]}" do
             env = variant[:env].merge('DATABASE_URL' => url)
-            env = Aggredator::EnvHelper.prepare_database_envs(env)
+            env = BBK::EnvHelper.prepare_database_envs(env)
             match_env(env, variant[:result])
           end
         end
@@ -89,7 +89,7 @@ RSpec.describe Aggredator::EnvHelper do
       ],
     ].each do |params, expected|
       it "params #{params}" do
-        expect(Aggredator::EnvHelper.prepare_mq_envs(params.stringify_keys)).to include(expected.stringify_keys)
+        expect(BBK::EnvHelper.prepare_mq_envs(params.stringify_keys)).to include(expected.stringify_keys)
       end
     end
   end

@@ -1,4 +1,4 @@
-module Aggredator
+module BBK
   class Config
     attr_accessor :store, :name
 
@@ -50,7 +50,7 @@ module Aggredator
     def require(env, desc: nil, bool: false, type: nil, key: nil)
       raise ArgumentError.new('Specified type and bool') if bool && type.present?
 
-      type = Aggredator::Config::BooleanCaster.singleton_method(:cast) if bool
+      type = BBK::Config::BooleanCaster.singleton_method(:cast) if bool
       @store[env.to_s.upcase] = {
         env: (key || env).to_s.upcase,
         required: true,
@@ -63,7 +63,7 @@ module Aggredator
     def optional(env, default: nil, desc: nil, bool: false, type: nil, key: nil)
       raise ArgumentError.new('Specified type and bool') if bool && type.present?
 
-      type = Aggredator::Config::BooleanCaster.singleton_method(:cast) if bool
+      type = BBK::Config::BooleanCaster.singleton_method(:cast) if bool
       @store[env.to_s.upcase] = {
         env: (key || env).to_s.upcase,
         required: false,

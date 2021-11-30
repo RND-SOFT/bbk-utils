@@ -1,4 +1,4 @@
-RSpec.describe Aggredator::LogFormatter do
+RSpec.describe BBK::LogFormatter do
   let(:progname) { SecureRandom.hex }
   let(:severity) { Logger::Severity.constants.map(&:to_s).sample }
   let(:time) { Time.now - Random.rand(1..42).minutes }
