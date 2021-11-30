@@ -2,7 +2,7 @@ version: "2.3"
 
 x-cache-build: &cb
   context: ${PWD-./}
-  dockerfile: envs/tests/units/Dockerfile.base
+  dockerfile: Dockerfile.base
   cache_from:
     - gemtestbase:2.5
     - bbk-tests:2.5
@@ -11,7 +11,7 @@ x-cache-build: &cb
 
 x-build: &build
   context: ${PWD-./}
-  dockerfile: envs/tests/units/Dockerfile
+  dockerfile: Dockerfile
 
 
 services:

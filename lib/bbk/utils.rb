@@ -5,7 +5,7 @@ require 'bbk/utils/crypt'
 require 'bbk/utils/logger'
 require 'bbk/utils/proxy_logger'
 require 'bbk/utils/version'
-require 'bbk/utils/smev3'
+require 'bbk/utils/xml'
 require 'bbk/utils/env_helper'
 
 module BBK

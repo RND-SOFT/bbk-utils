@@ -7,7 +7,7 @@ variables:
   BUILDVERSION: ${CI_PIPELINE_ID}
 
 .test:
-  image: rnds/ruby:2.5-test
+  image: rnds/ruby:3.0-test
   stage: tests
   variables:
     COMPOSE_PROJECT_NAME: bbkutils_${CI_PIPELINE_ID}_${CI_JOB_ID}
@@ -40,7 +40,7 @@ ruby-3.0:
     CASE: '3.0'
   
 build:
-  image: rnds/ruby:2.5-test
+  image: rnds/ruby:3.0-test
   stage: build
   script:
     - bundle install --jobs=3 --path vendor/bundle && bundle package --all
@@ -57,7 +57,7 @@ build:
       - rubycritic/*
 
 # pushgem:
-#   image: rnds/ruby:2.5-test
+#   image: rnds/ruby:3.0-test
 #   stage: deploy
 #   script:
 #     - mkdir -p ~/.gem
@@ -71,7 +71,7 @@ build:
 #     - /^v\d\.\d$/
 
 badges:
-  image: rnds/ruby:2.5-test
+  image: rnds/ruby:3.0-test
   stage: deploy
   allow_failure: true
   variables:
