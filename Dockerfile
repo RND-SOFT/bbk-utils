@@ -1,6 +1,6 @@
-ARG BUILD_TAG=3.0
-  
-FROM gemtestbase:${BUILD_TAG} as image
+ARG RUBY_VERSION=2.5
+
+FROM ruby:${RUBY_VERSION}-alpine
 
 RUN mkdir -p /usr/local/etc \
   && { \
@@ -8,6 +8,9 @@ RUN mkdir -p /usr/local/etc \
     echo 'update: --no-document'; \
   } >> /usr/local/etc/gemrc \
   && echo 'gem: --no-document' > ~/.gemrc
+
+RUN set -ex \
+  && apk add --no-cache build-base git curl
 
 WORKDIR /home/app
 
