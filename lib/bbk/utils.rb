@@ -15,6 +15,6 @@ module BBK
 
     end
 
-    self.logger = ::Logger.new(STDOUT)
+    self.logger = ::BBK::Logger.default
   end
 end

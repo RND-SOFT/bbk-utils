@@ -1,6 +1,6 @@
 --color
 --tty
---format documentation
+--format progress
 --require spec_helper
 --format RspecJunitFormatter
 --out rspec.xml

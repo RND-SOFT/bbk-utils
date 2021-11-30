@@ -39,7 +39,7 @@ module BBK
       if @default
         @default
       else
-        @default = new(DEFAULT_NAME, 'UNKNOWN')
+        @default = new(DEFAULT_NAME, DEFAULT_LEVEL)
         @default.level = DEFAULT_LEVEL
         @default
       end
