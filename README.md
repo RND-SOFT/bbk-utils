@@ -10,7 +10,7 @@
 [![Vulnerabilities](https://lysander.rnds.pro/api/v1/badges/bbkutils_vulnerable.svg)](https://lysander.rnds.pro/api/v1/badges/bbkutils_vulnerable.html)
 
 
-Common classes for BBK library stack.
+Common classes and helpers for BBK library stack.
 
 ## Installation
 
