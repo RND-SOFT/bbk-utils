@@ -3,6 +3,7 @@ PATH
   specs:
     bbk-utils (1.0.0)
       activesupport
+      russian
 
 GEM
   remote: https://rubygems.org/
@@ -87,6 +88,8 @@ GEM
       simplecov (>= 0.17.0)
       tty-which (~> 0.4.0)
       virtus (~> 1.0)
+    russian (0.6.0)
+      i18n (>= 0.5.0)
     sexp_processor (4.16.0)
     simplecov (0.21.2)
       docile (~> 1.1)
@@ -114,6 +117,7 @@ GEM
 
 PLATFORMS
   ruby
+  x86_64-linux
 
 DEPENDENCIES
   bbk-utils!

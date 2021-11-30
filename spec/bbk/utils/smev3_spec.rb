@@ -1,4 +1,4 @@
-RSpec.describe Aggredator::Smev3 do
+RSpec.describe BBK::Smev3 do
   it 'build attachment id' do
     value = SecureRandom.hex
     expect(described_class.build_attachment_id(value)).to eq "@{#{value}}"

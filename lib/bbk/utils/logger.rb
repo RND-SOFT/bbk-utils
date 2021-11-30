@@ -9,7 +9,7 @@ module BBK
     DEFAULT_NAME = 'bbk'
     DEFAULT_LEVEL = Logger::Severity::DEBUG
 
-    def self.new(*args)
+    def self.new(*args, **kwargs)
       instance = super
       ActiveSupport::TaggedLogging.new(instance)
     end

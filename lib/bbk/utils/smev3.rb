@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'russian'
 
 module BBK
   module Smev3
