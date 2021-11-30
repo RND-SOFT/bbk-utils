@@ -10,6 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Support classes for BBK stack'
   spec.description   = 'Support classes for BBK stack'
+  spec.homepage      = 'https://github.com/RND-SOFT/bbk-utils'
 
   spec.files         = Dir['bin/*', 'lib/**/*', 'Gemfile*', 'LICENSE.txt', 'README.md']
   spec.bindir        = 'bin'
