@@ -41,3 +41,7 @@ gem "bbk-utils", "~> 1.0.0"
 
 * Ruby (MRI) 2.5.x
 * Ruby (MRI) 3.0.x
+
+## License
+
+The gem is available as open source under the terms of the MIT License.
