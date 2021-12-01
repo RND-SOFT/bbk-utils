@@ -9,20 +9,35 @@
 [![Outdated](https://lysander.rnds.pro/api/v1/badges/bbkutils_outdated.svg)](https://lysander.rnds.pro/api/v1/badges/bbkutils_outdated.html)
 [![Vulnerabilities](https://lysander.rnds.pro/api/v1/badges/bbkutils_vulnerable.svg)](https://lysander.rnds.pro/api/v1/badges/bbkutils_vulnerable.html)
 
-
 Common classes and helpers for BBK library stack.
 
 ## Installation
 
-### Terminal
-
-```bash
-gem install bbk-utils
-```
-
-### Gemfile
+Adding to a gem:
 
 ```ruby
-gem 'bbk-utils'
+# my-cool-gem.gemspec
+
+Gem::Specification.new do |spec|
+  # ...
+  spec.add_dependency "bbk-utils", "~> 1.0.0"
+  # ...
+end
 ```
 
+Or adding to your project:
+
+```ruby
+# Gemfile
+
+gem "bbk-utils", "~> 1.0.0"
+```
+
+### Supported Ruby versions
+
+* Ruby (MRI) >= 2.5.0
+
+### Tested Ruby versions
+
+* Ruby (MRI) 2.5.x
+* Ruby (MRI) 3.0.x
