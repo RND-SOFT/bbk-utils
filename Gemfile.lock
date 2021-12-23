@@ -1,14 +1,14 @@
 PATH
   remote: .
   specs:
-    bbk-utils (1.0.1)
-      activesupport
+    bbk-utils (1.0.1.40000)
+      activesupport (~> 6.0)
       russian
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.1.4.1)
+    activesupport (6.1.4.4)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -49,7 +49,8 @@ GEM
     kwalify (0.7.2)
     launchy (2.5.0)
       addressable (~> 2.7)
-    minitest (5.14.4)
+    minitest (5.15.0)
+    parallel (1.21.0)
     parser (3.0.3.1)
       ast (~> 2.4.1)
     path_expander (1.1.0)
@@ -60,6 +61,8 @@ GEM
       kwalify (~> 0.7.0)
       parser (~> 3.0.0)
       rainbow (>= 2.0, < 4.0)
+    regexp_parser (2.2.0)
+    rexml (3.2.5)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
       rspec-expectations (~> 3.10.0)
@@ -75,6 +78,20 @@ GEM
     rspec-support (3.10.3)
     rspec_junit_formatter (0.4.1)
       rspec-core (>= 2, < 4, != 2.12.0)
+    rubocop (1.22.3)
+      parallel (~> 1.10)
+      parser (>= 3.0.0.0)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.8, < 3.0)
+      rexml
+      rubocop-ast (>= 1.12.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 1.4.0, < 3.0)
+    rubocop-ast (1.13.0)
+      parser (>= 3.0.1.1)
+    rubocop-rspec (2.6.0)
+      rubocop (~> 1.19)
+    ruby-progressbar (1.11.0)
     ruby_parser (3.18.1)
       sexp_processor (~> 4.16)
     rubycritic (4.6.1)
@@ -113,7 +130,7 @@ GEM
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
       equalizer (~> 0.0, >= 0.0.9)
-    zeitwerk (2.5.1)
+    zeitwerk (2.5.2)
 
 PLATFORMS
   ruby
@@ -127,9 +144,11 @@ DEPENDENCIES
   rake (~> 12.0)
   rspec (~> 3.0)
   rspec_junit_formatter
+  rubocop
+  rubocop-rspec
   rubycritic
   simplecov
   simplecov-console
 
 BUNDLED WITH
-   2.2.32
+   2.2.33

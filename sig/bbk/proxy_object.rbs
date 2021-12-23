@@ -1,0 +1,7 @@
+module BBK
+  module Utils
+    interface _ProxyObject
+      def method_missing: (Symbol, *untyped) ?{(*untyped, **untyped) -> untyped} -> untyped
+    end
+  end
+end

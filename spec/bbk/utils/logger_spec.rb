@@ -1,4 +1,4 @@
-RSpec.describe BBK::Logger do
+RSpec.describe BBK::Utils::Logger do
   let(:progname) { SecureRandom.hex }
   let(:io) { StringIO.new('') }
   let(:output) { io.string }
@@ -8,14 +8,14 @@ RSpec.describe BBK::Logger do
     logger = described_class.new progname, :debug, io: io
     expect(output).to match(/Using LOG_LEVEL/)
     expect(logger.level).to eq Logger::DEBUG
-    expect(logger.formatter).to be_a BBK::LogFormatter
+    expect(logger.formatter).to be_a BBK::Utils::LogFormatter
   end
 
   it 'default log level info' do
     logger = described_class.new progname, nil, io: io
     expect(output).to match(/Using LOG_LEVEL/)
     expect(logger.level).to eq Logger::INFO
-    expect(logger.formatter).to be_a BBK::LogFormatter
+    expect(logger.formatter).to be_a BBK::Utils::LogFormatter
   end
 
   it 'tagged' do
@@ -36,4 +36,12 @@ RSpec.describe BBK::Logger do
   it 'ActiveSupport::TaggedLogging' do
     expect(described_class.new(progname, nil, io: io)).to be_an(ActiveSupport::TaggedLogging)
   end
+
+  it 'silence' do
+    logger = described_class.new progname, nil, io: io
+    logger.silence(1, 2, 3, 4) do |obj|
+      expect(obj).to eq logger
+    end
+  end
 end
+

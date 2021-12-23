@@ -1,0 +1,5 @@
+module BBK
+  module App
+    VERSION: String
+  end
+end

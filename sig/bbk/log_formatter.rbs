@@ -1,0 +1,10 @@
+module BBK
+  module Utils
+    class LogFormatter
+      FORMAT: String
+      def call: (String severity, Time time, String progname, untyped msg) -> String
+
+      def thread_id: () -> String
+    end
+  end
+end

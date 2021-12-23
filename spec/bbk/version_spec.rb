@@ -3,3 +3,4 @@ RSpec.describe BBK::Utils do
     expect(BBK::Utils::VERSION).not_to be nil
   end
 end
+

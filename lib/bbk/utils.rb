@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support'
 require 'active_support/core_ext'
 require 'bbk/utils/config'
@@ -10,11 +12,15 @@ require 'bbk/utils/env_helper'
 
 module BBK
   module Utils
+
     class << self
+
       attr_accessor :logger
 
     end
 
-    self.logger = ::BBK::Logger.default
+    self.logger = ::BBK::Utils::Logger.default
+
   end
 end
+
