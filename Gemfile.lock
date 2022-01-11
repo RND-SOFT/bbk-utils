@@ -60,6 +60,7 @@ GEM
       kwalify (~> 0.7.0)
       parser (~> 3.0.0)
       rainbow (>= 2.0, < 4.0)
+    rexml (3.2.5)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
       rspec-expectations (~> 3.10.0)
@@ -95,6 +96,9 @@ GEM
       docile (~> 1.1)
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
+    simplecov-cobertura (2.1.0)
+      rexml
+      simplecov (~> 0.19)
     simplecov-console (0.9.1)
       ansi
       simplecov
@@ -129,7 +133,8 @@ DEPENDENCIES
   rspec_junit_formatter
   rubycritic
   simplecov
+  simplecov-cobertura
   simplecov-console
 
 BUNDLED WITH
-   2.2.32
+   2.2.33
