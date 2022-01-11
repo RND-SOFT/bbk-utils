@@ -1,0 +1,16 @@
+module BBK
+  module Utils
+    class ProxyLogger
+
+      include _ProxyObject
+
+      attr_reader tags: Array[String]
+      attr_reader logger: BBK::Utils::Logger|::_Logger
+
+      def initialize: (BBK::Utils::Logger|::_Logger logger, tags: Array[String?]|String?) -> void
+
+      def add_tags: (*String tags) -> void
+
+    end 
+  end
+end

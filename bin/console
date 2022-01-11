@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'bundler/setup'
 require 'bbk/utils'
@@ -12,3 +13,4 @@ require 'bbk/utils'
 
 require 'irb'
 IRB.start(__FILE__)
+
