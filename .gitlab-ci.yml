@@ -18,7 +18,7 @@ variables:
     - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${CASE}
     - docker-compose exec -T test-${CASE} rspec | tee .coverage
     - docker-compose exec -T test-${CASE} cat rspec.xml > rspec-${CASE}.xml
-    - docker-compose exec -T test-${CASE} cat coverage/coverage.xml > overage-${CASE}.xml
+    - docker-compose exec -T test-${CASE} cat coverage/coverage.xml > coverage-${CASE}.xml
   after_script:
     - docker-compose down -v --remove-orphans
   coverage: '/\(\d+.\d+\%\) covered/'
