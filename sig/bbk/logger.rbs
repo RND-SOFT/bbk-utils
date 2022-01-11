@@ -1,0 +1,15 @@
+module BBK
+  module Utils
+    class Logger < ::Logger
+
+      def self.new: (*untyped) -> _Logger
+
+      def initialize: (String progname, String|Symbol|Integer|nil level, ?io: ::Logger::logdev) -> void
+
+      def silence: (*untyped) { (self) -> untyped } -> untyped
+
+      def self.default: () -> instance
+
+    end
+  end
+end

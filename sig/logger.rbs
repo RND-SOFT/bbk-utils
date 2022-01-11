@@ -1,0 +1,37 @@
+interface _Logger
+
+  def add: (untyped severity, ?untyped message, ?untyped progname) -> untyped
+
+  def close: () -> untyped
+
+  def debug: (?untyped progname) { (*untyped) -> untyped } -> untyped
+
+  def debug!: () -> untyped
+
+  def error: (?untyped progname) { (*untyped) -> untyped } -> untyped
+
+  def error!: () -> untyped
+
+  def fatal: (?untyped progname) { (*untyped) -> untyped } -> untyped
+
+  def fatal!: () -> untyped
+
+  def info: (?untyped progname) { (*untyped) -> untyped } -> untyped
+
+  def info!: () -> untyped
+
+  def info?: () -> untyped
+
+  def level: () -> untyped
+
+  def level=: (untyped severity) -> untyped
+
+  def progname: () -> untyped
+
+  def progname=: (untyped) -> untyped
+
+  def warn: (?untyped progname) { (*untyped) -> untyped } -> untyped
+
+  def warn!: () -> untyped
+
+end

@@ -1,0 +1,9 @@
+module BBK
+  module Utils
+    module Crypt
+      def self.full_check: (String key_path, String cert_path, *String cacert_chain) -> Array[String]?
+      def self.valid_key: (String key_path, String cert_path) -> bool
+      def self.valid_cert_sign?: (String cert_path, *String ca_certs_paths) -> bool
+    end
+  end
+end

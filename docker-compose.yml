@@ -17,6 +17,10 @@ services:
       args:
         RUBY_VERSION: 3.0
     image: bbkutils-tests:3.0
+    environment:
+      - RBS_TEST_TARGET
+      - RUBYOPT
+      - RBS_TEST_OPT
     working_dir: /home/app
     
     

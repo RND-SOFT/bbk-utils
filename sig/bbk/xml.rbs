@@ -1,0 +1,10 @@
+module BBK
+  module Utils
+    module Xml
+      MTOM_ID_FIRST_LETTERS: Array[String]
+      def self.build_substituion_id: (string id) -> String
+      def self.generate_mtom_attachment_id: -> String
+      def self.normalize_slug: (String name, String href) -> String
+    end
+  end
+end

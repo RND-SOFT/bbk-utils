@@ -1,0 +1,55 @@
+module BBK
+  module Utils
+    class Config
+
+      class BooleanCaster
+        FALSE_VALUES: Array[bool | Integer | String | Symbol]
+        def self.cast: (untyped value) -> (bool|nil)
+      end
+
+      interface _CallableCaster
+        def call: (String) -> untyped
+      end
+
+      interface _ClassCaster
+        def new: (String) -> untyped
+      end
+
+      type typeCaster = _CallableCaster | _ClassCaster
+      type configItem = {env: String, file: String?, required: bool, desc: String?, bool: bool, value: untyped, default: untyped, type: typeCaster?}
+      type envSource = _ENV | ENVClass
+
+      attr_accessor store: untyped
+      attr_accessor name: String?
+
+      def self.instance: () -> instance
+      
+      def initialize: (?String name) -> void
+      def map: (envSource env, String file, ?required: bool, ?desc: String, ?bool: bool, ?key: String) -> void
+      def require: (envSource env, ?desc: String?, ?bool: bool, ?type: typeCaster, ?key: String?) -> void
+      def optional: (envSource env, ?default: untyped, ?desc: String, ?bool: bool, ?type: typeCaster, ?key: String) -> void
+
+      def run!: (?envSource source) -> void
+      def []: (String key) -> untyped
+      def []=: (String key, untyped value) -> void
+      def content: (String key) -> untyped
+      def fetch: (String key, ?untyped default) -> untyped
+      # def to_s: () -> String
+      def as_json: (*untyped) -> Hash[String, untyped]
+      def to_json: (*untyped) -> String
+      def to_yaml: (*untyped) -> String
+
+      private
+
+      def normalize_key: (string key) -> String
+      def process: (envSource source, configItem item) -> void
+
+      def required!: (configItem item) -> void
+      def print_file_item: (configItem item, String padding) -> String
+      def print_item: (configItem item, String padding) -> String
+      def wrap_required: (configItem item) -> String
+
+
+    end
+  end
+end

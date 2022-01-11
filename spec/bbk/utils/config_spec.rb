@@ -1,9 +1,9 @@
 require 'tmpdir'
 
-RSpec.describe BBK::Config do
+RSpec.describe BBK::Utils::Config do
   let(:config) { described_class.new }
 
-  around :each do |example|
+  around do |example|
     Dir.mktmpdir do |dir|
       Dir.chdir dir do
         example.run
@@ -18,7 +18,7 @@ RSpec.describe BBK::Config do
 
     %i[map require optional run! \[\] \[\]= content to_s].each do |method|
       it method.to_s do
-        arity = described_class.new.method(method).parameters.select { |k, _v| k == :req }.count
+        arity = described_class.new.method(method).parameters.select {|k, _v| k == :req }.count
         args = arity.times.map(&:to_s)
         expect(described_class.instance).to receive(method)
         described_class.send(method, *args)
@@ -151,17 +151,17 @@ RSpec.describe BBK::Config do
     it 'call initialize from passed type' do
       cls = Class.new do
         attr_reader :value
+
         def initialize(value)
           @value = value
         end
       end
       config.optional('KEY', type: cls)
       value = SecureRandom.hex
-      config.run!({'KEY' => value})
+      config.run!({ 'KEY' => value })
       expect(config['KEY']).to be_a(cls)
       expect(config['KEY'].value).to eq value
     end
-
   end
 
   describe 'Example' do
@@ -183,14 +183,14 @@ RSpec.describe BBK::Config do
       config.map('FILE2', 'some/folder/file.2', desc: 'file2 description')
 
       env = {
-        'REQUIRED_VAR' => 'req_val1',
-        'REQUIRED_VAR_DESC' => 'req_val_desc1',
+        'REQUIRED_VAR'       => 'req_val1',
+        'REQUIRED_VAR_DESC'  => 'req_val_desc1',
 
-        'OPTIONAL_VAR_DESC' => 'opt_val_desc1',
+        'OPTIONAL_VAR_DESC'  => 'opt_val_desc1',
         'OPTIONAL_VAR2_DESC' => 'opt_val_desc2',
 
-        'FILE1' => 'content1',
-        'FILE2' => 'content2'
+        'FILE1'              => 'content1',
+        'FILE2'              => 'content2'
       }
 
       expect do
@@ -221,8 +221,8 @@ Environment variables:
     end
   end
 
-  context '#fetch' do
-    before(:each) do
+  describe '#fetch' do
+    before do
       config.optional('TEST', default: :default)
     end
 
@@ -240,3 +240,4 @@ Environment variables:
     end
   end
 end
+

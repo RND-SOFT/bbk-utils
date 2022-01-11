@@ -1,7 +1,7 @@
 require 'tempfile'
 require 'openssl'
 
-RSpec.describe BBK::Crypt do
+RSpec.describe BBK::Utils::Crypt do
   def generate_cert(cn, cacert: nil, cakey: nil)
     key = OpenSSL::PKey::RSA.new 2048
     pub_key = key.public_key
@@ -19,11 +19,11 @@ RSpec.describe BBK::Crypt do
     ef.subject_certificate = cert
     ef.issuer_certificate = cacert || cert
 
-    cert.sign cakey || key, OpenSSL::Digest::SHA1.new
+    cert.sign cakey || key, OpenSSL::Digest.new('SHA1')
     [key, cert]
   end
 
-  around(:each) do |example|
+  around do |example|
     ca_key, ca_cert = generate_cert('CA')
     key, cert = generate_cert('TEST', cacert: ca_cert, cakey: ca_key)
 
@@ -43,7 +43,7 @@ RSpec.describe BBK::Crypt do
   end
 
   context 'full check' do
-    before(:each) do
+    before do
       expect(described_class).to receive(:valid_key_cert?).and_call_original
       expect(described_class).to receive(:valid_cert_sign?).and_call_original
     end
@@ -66,3 +66,4 @@ RSpec.describe BBK::Crypt do
     end
   end
 end
+

@@ -3,37 +3,42 @@
 require 'bbk/utils/logger'
 
 module BBK
-  class ProxyLogger
-    attr_reader :tags, :logger
+  module Utils
+    class ProxyLogger
 
-    def initialize(logger, tags:)
-      @logger = logger
-      @tagged = @logger.respond_to?(:tagged)
-      @tags = [tags].flatten
-    end
+      attr_reader :tags, :logger
 
-    def add_tags(*tags)
-      @tags += tags.flatten
-      @tags = @tags.uniq
-    end
-
-    def method_missing(method, *args, &block)
-      super unless logger.respond_to?(method)
-
-      if @tagged
-        current_tags = tags - logger.formatter.current_tags
-        logger.tagged(current_tags) { logger.send(method, *args, &block) }
-      else
-        logger.send(method, *args, &block)
+      def initialize(logger, tags:)
+        @logger = logger
+        @tagged = @logger.respond_to?(:tagged)
+        @tags = [tags].flatten
       end
-    end
 
-    def respond_to?(*args)
-      logger.send(:respond_to?, *args) || super
-    end
+      def add_tags(*tags)
+        @tags += tags.flatten
+        @tags = @tags.uniq
+      end
 
-    def respond_to_missing?(method_name, include_private = false)
-      logger.send(:respond_to_missing?, method_name, include_private) || super
+      def method_missing(method, *args, &block)
+        super unless logger.respond_to?(method)
+
+        if @tagged
+          current_tags = tags - logger.formatter.current_tags
+          logger.tagged(current_tags) { logger.send(method, *args, &block) }
+        else
+          logger.send(method, *args, &block)
+        end
+      end
+
+      def respond_to?(name, include_private=false)
+        logger.send(:respond_to?, name, include_private) || super
+      end
+
+      def respond_to_missing?(method_name, include_private = false)
+        logger.send(:respond_to_missing?, method_name, include_private) || super
+      end
+
     end
   end
 end
+

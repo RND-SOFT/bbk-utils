@@ -19,7 +19,7 @@ Bundler.require(:default, :development, :test)
 BBK::Utils.logger = ::Logger.new(IO::NULL)
 
 $root = File.join(File.dirname(__dir__), 'spec')
-Dir[File.join(__dir__, 'support', '**', '*.rb')].sort.each { |f| require f }
+Dir[File.join(__dir__, 'support', '**', '*.rb')].sort.each {|f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -32,3 +32,4 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+

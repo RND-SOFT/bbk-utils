@@ -1,4 +1,4 @@
-RSpec.describe BBK::ProxyLogger do
+RSpec.describe BBK::Utils::ProxyLogger do
   let(:progname) { SecureRandom.hex }
   let(:io) { StringIO.new('') }
   let(:output) { io.string }
@@ -34,3 +34,4 @@ RSpec.describe BBK::ProxyLogger do
     end
   end
 end
+
