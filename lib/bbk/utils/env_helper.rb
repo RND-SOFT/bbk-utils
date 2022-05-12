@@ -17,6 +17,19 @@ module BBK
         env
       end
 
+      def self.prepare_jaeger_envs(env)
+        jaeger_uri = ::URI.parse(env['JAEGER_URL'] || '').tap do |uri|
+          uri.scheme = env.fetch('JAEGER_SENDER', uri.scheme) || 'udp'
+          uri.hostname = env.fetch('JAEGER_HOST', uri.host) || 'jaeger'
+          uri.port = env.fetch('JAEGER_PORT', uri.port) || 6831
+        end
+        env['JAEGER_URL'] = jaeger_uri.to_s
+        env['JAEGER_SENDER'] = jaeger_uri.scheme
+        env['JAEGER_HOST'] = jaeger_uri.host
+        env['JAEGER_PORT'] = jaeger_uri.port.to_s
+        env
+      end
+
       def self.build_uri_with_defaults(env)
         ::URI.parse(env['DATABASE_URL'] || '').tap do |uri|
           uri.scheme    = env.fetch('DATABASE_ADAPTER', uri.scheme) || 'postgresql'

@@ -1,0 +1,29 @@
+---
+- file: lib/bbk/utils/env_helper.rb
+  diagnostics:
+  - range:
+      start:
+        line: 46
+        character: 41
+      end:
+        line: 46
+        character: 50
+    severity: ERROR
+    message: |-
+      Cannot pass a value of type `(::String | nil)` as an argument of type `::String`
+        (::String | nil) <: ::String
+          nil <: ::String
+    code: Ruby::ArgumentTypeMismatch
+  - range:
+      start:
+        line: 63
+        character: 39
+      end:
+        line: 63
+        character: 48
+    severity: ERROR
+    message: |-
+      Cannot pass a value of type `(::String | nil)` as an argument of type `::String`
+        (::String | nil) <: ::String
+          nil <: ::String
+    code: Ruby::ArgumentTypeMismatch

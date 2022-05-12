@@ -4,6 +4,7 @@ module BBK
 
       def self.prepare_database_envs: (Hash[String, untyped]|::_ENV env ) -> (Hash[String,untyped]|::_ENV)
       def self.prepare_mq_envs: (Hash[String, untyped]|::_ENV env) -> (Hash[String, untyped]|::_ENV)
+      def self.prepare_jaeger_envs: (Hash[String, untyped]|::_ENV env) -> (Hash[String, untyped]|::_ENV)
       def self.build_uri_with_defaults: (Hash[String, untyped]|::_ENV env) -> URI::Generic
       def self.apply_env_from_uri: (Hash[String, untyped]|::_ENV env, URI::Generic uri) -> void
       def self.build_mq_uri_with_defaults: (Hash[String, untyped]|::_ENV env) -> Array[URI::Generic]

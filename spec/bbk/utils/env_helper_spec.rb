@@ -126,5 +126,26 @@ adapter: 'postgresql' } }
       end
     end
   end
+
+  context 'jaeger envs' do
+    CASES = [
+      [
+        {},
+        { 'JAEGER_URL': 'udp://jaeger:6831', 'JAEGER_HOST': 'jaeger', 'JAEGER_PORT': '6831', 'JAEGER_SENDER': 'udp' }
+      ],
+      [
+        { 'JAEGER_URL': 'http://test:45000' },
+        { 'JAEGER_URL': 'http://test:45000', 'JAEGER_HOST': 'test', 'JAEGER_PORT': '45000', 'JAEGER_SENDER': 'http' }
+      ],
+      [
+        { 'JAEGER_HOST': 'test', 'JAEGER_PORT': '42000' },
+        { 'JAEGER_URL': 'udp://test:42000', 'JAEGER_HOST': 'test', 'JAEGER_PORT': '42000', 'JAEGER_SENDER': 'udp' }
+      ]
+    ].each do |params, expected|
+      it "params #{params}" do
+        expect(BBK::Utils::EnvHelper.prepare_jaeger_envs(params.stringify_keys)).to include(expected.stringify_keys)
+      end
+    end
+  end
 end
 

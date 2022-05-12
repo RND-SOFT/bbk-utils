@@ -52,7 +52,7 @@ steep:
   script:
     - docker-compose build --force-rm --pull test-${CASE}
     - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${CASE}
-    - docker-compose exec -T test-${CASE} steep check
+    - docker-compose exec -T test-${CASE} steep check --with-expectations
     - docker-compose exec -T test-${CASE} steep stats --format=table
   after_script:
     - docker-compose down -v --remove-orphans
