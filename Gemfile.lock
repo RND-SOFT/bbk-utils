@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     bbk-utils (1.0.1)
-      activesupport (~> 6.0)
+      activesupport (>= 6.0)
       russian
 
 GEM
