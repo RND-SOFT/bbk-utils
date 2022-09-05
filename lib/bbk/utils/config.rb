@@ -9,6 +9,8 @@ module BBK
       attr_accessor :store, :name
       attr_reader :prefix, :env_prefix, :parent
 
+      class KeyError < StandardError; end
+
       class BooleanCaster
 
         FALSE_VALUES = [
@@ -116,7 +118,7 @@ module BBK
       end
 
       def [](key)
-        self.get(key, search_up: true, search_down: true)
+        self.get(key, search_up: true, search_down: true)[:value]
       end
 
       def []=(key, value)
@@ -133,12 +135,13 @@ module BBK
       end
 
       def fetch(key, default = nil)
-        # store.fetch(key.to_s.upcase, default)
-        if (field = store[key.to_s.upcase]).present? && field.key?(:value)
-          field[:value]
+        if (rec = self.get(key, search_up: true, search_down: true)) && rec.key?(:value)
+          rec[:value]
         else
           default
         end
+      rescue KeyError
+        default
       end
 
       def to_s
@@ -190,16 +193,16 @@ module BBK
       def get(key, search_up: false, search_down: false)
         normalized_key = normalize_key(key)
         if @store.key?(normalized_key)
-          return @store[normalized_key][:value]
+          return @store[normalized_key]
         end
         prefix_key = full_prefixed_key(key)
         if @store.key?(prefix_key)
-          return @store[prefix_key][:value]
+          return @store[prefix_key]
         end
         if search_down
           sub_prefixed_keys(key).each do |pref_key|
             if @store.key?(pref_key)
-              return @store[pref_key][:value]
+              return @store[pref_key]
             end
 
             subconf = @subconfigs.find {|sub| pref_key.starts_with?(sub.env_prefix)}
@@ -210,7 +213,7 @@ module BBK
         if search_up && @parent
           return @parent.get(key, search_up: true, search_down: false)
         end
-        raise "There is no such key: #{key} in config!"
+        raise KeyError.new("There is no such key: #{key} in config!")
       end
 
       def store_with_subconfigs

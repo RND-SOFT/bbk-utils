@@ -307,6 +307,14 @@ Environment variables:
       expect(config['REDIS_URL']).to eq 'redis://redis:6379'
       expect{ config['DATABASE_URL'] }.to raise_error
     end
+
+    it 'fetch usage' do
+      config.run!
+      expect(amqp_config.fetch('REDIS_URL')).to eq 'redis://redis:6379'
+      expect(service_config.fetch('REDIS_URL')).to eq 'redis://redis:6379'
+      expect(config.fetch('SERVICE_AMQP_URL')).to eq 'amqps://mq:5671'
+      expect(amqp_config.fetch('KEY', 'VALUE')).to eq 'VALUE'
+    end
   
   end
 

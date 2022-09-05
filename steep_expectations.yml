@@ -3,20 +3,20 @@
   diagnostics:
   - range:
       start:
-        line: 35
+        line: 37
         character: 24
       end:
-        line: 35
+        line: 37
         character: 35
     severity: ERROR
     message: The method parameter has different kind from the declaration `() -> instance`
     code: Ruby::DifferentMethodParameterKind
   - range:
       start:
-        line: 60
+        line: 62
         character: 41
       end:
-        line: 60
+        line: 62
         character: 50
     severity: ERROR
     message: |-
@@ -25,10 +25,10 @@
     code: Ruby::IncompatibleAssignment
   - range:
       start:
-        line: 60
+        line: 62
         character: 65
       end:
-        line: 60
+        line: 62
         character: 73
     severity: ERROR
     message: |-
@@ -37,10 +37,10 @@
     code: Ruby::IncompatibleAssignment
   - range:
       start:
-        line: 71
+        line: 73
         character: 47
       end:
-        line: 71
+        line: 73
         character: 56
     severity: ERROR
     message: |-
@@ -51,10 +51,10 @@
     code: Ruby::IncompatibleAssignment
   - range:
       start:
-        line: 85
+        line: 87
         character: 38
       end:
-        line: 85
+        line: 87
         character: 47
     severity: ERROR
     message: |-
@@ -63,10 +63,10 @@
     code: Ruby::IncompatibleAssignment
   - range:
       start:
-        line: 85
+        line: 87
         character: 62
       end:
-        line: 85
+        line: 87
         character: 71
     severity: ERROR
     message: |-
@@ -77,10 +77,10 @@
     code: Ruby::IncompatibleAssignment
   - range:
       start:
-        line: 85
+        line: 87
         character: 73
       end:
-        line: 85
+        line: 87
         character: 81
     severity: ERROR
     message: |-
@@ -89,10 +89,10 @@
     code: Ruby::IncompatibleAssignment
   - range:
       start:
-        line: 100
+        line: 102
         character: 15
       end:
-        line: 100
+        line: 102
         character: 27
     severity: ERROR
     message: |-
@@ -106,20 +106,20 @@
     code: Ruby::IncompatibleAssignment
   - range:
       start:
-        line: 206
+        line: 209
         character: 12
       end:
-        line: 206
+        line: 209
         character: 16
     severity: ERROR
     message: Cannot jump from here
     code: Ruby::UnexpectedJump
   - range:
       start:
-        line: 249
+        line: 252
         character: 20
       end:
-        line: 249
+        line: 252
         character: 60
     severity: ERROR
     message: 'UnexpectedError: Unknown name for build_instance: ENVClass'
