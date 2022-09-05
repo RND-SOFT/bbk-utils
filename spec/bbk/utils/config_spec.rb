@@ -301,8 +301,11 @@ Environment variables:
 
       expect(service_config['REDIS_URL']).to eq 'redis://redis:6379'
       expect(service_config['NAME']).to eq 'service'
+      expect(service_config['DATABASE_URL']).to eq 'postgres://db:5432/test'
 
       expect(config['NAME']).to eq 'root'
+      expect(config['REDIS_URL']).to eq 'redis://redis:6379'
+      expect{ config['DATABASE_URL'] }.to raise_error
     end
   
   end
