@@ -24,7 +24,7 @@ module BBK
 
       def self.instance: () -> instance
       
-      def initialize: (?String name) -> void
+      def initialize: (?name: String?, ?prefix: String?, ?parent: BBK::Utils::Config?) -> void
       def map: (envSource env, String file, ?required: bool, ?desc: String, ?bool: bool, ?key: String) -> void
       def require: (envSource env, ?desc: String?, ?bool: bool, ?type: typeCaster, ?key: String?) -> void
       def optional: (envSource env, ?default: untyped, ?desc: String, ?bool: bool, ?type: typeCaster, ?key: String) -> void
@@ -41,7 +41,7 @@ module BBK
 
       private
 
-      def normalize_key: (string key) -> String
+      def normalize_key: (String? key) -> String?
       def process: (envSource source, configItem item) -> void
 
       def required!: (configItem item) -> void

@@ -239,5 +239,76 @@ Environment variables:
       expect(config.fetch('invalid key', :value)).to eq :value
     end
   end
+
+  describe 'subconfig' do
+    
+    let(:prefix) { 'service' }
+    let(:amqp_prefix) { 'amqp' }
+    let(:service_config) { config.subconfig(prefix: prefix) }
+    let(:amqp_config) { service_config.subconfig(prefix: amqp_prefix) }
+  
+    before do
+      config.optional('LOG_LEVEL', default: 'trace')
+      config.optional('REDIS_URL', default: 'redis://redis:6379')
+      config.optional('NAME', default: 'root')
+      service_config.optional('LOG_LEVEL', default: 'trace')
+      service_config.optional('DATABASE_URL', default: 'postgres://db:5432/test')
+      service_config.optional('NAME', default: 'service')
+      amqp_config.optional('LOG_LEVEL', default: 'trace') 
+      amqp_config.optional('URL', default: 'amqps://mq:5671')
+    end
+  
+    it 'subconfig has parent' do
+      expect(service_config.parent).to eq config
+      expect(amqp_config.parent).to eq service_config
+    end
+  
+    it 'config is root' do
+      expect(config).to be_root
+    end
+  
+    it 'subconfigs is not root' do
+      expect(service_config).not_to be_root
+      expect(amqp_config).not_to be_root
+    end
+  
+    it 'get values' do
+      config.run!({
+        'REDIS_URL' => 'redis://localhost:6379',
+        'SERVICE_AMQP_URL' => 'amqp://mq:5672',
+        'LOG_LEVEL' => 'debug',
+        'SERVICE_LOG_LEVEL' => 'info',
+        'SERVICE_AMQP_LOG_LEVEL' => 'error'
+      })
+      expect(config['REDIS_URL']).to eq 'redis://localhost:6379'
+      expect(config['SERVICE_DATABASE_URL']).to eq 'postgres://db:5432/test'
+      expect(config['SERVICE_AMQP_URL']).to eq 'amqp://mq:5672'
+      expect(config['LOG_LEVEL']).to eq 'debug'
+
+      expect(service_config['DATABASE_URL']).to eq 'postgres://db:5432/test'
+      expect(service_config['AMQP_URL']).to eq 'amqp://mq:5672'
+      expect(service_config['LOG_LEVEL']).to eq 'info'
+
+      expect(amqp_config['URL']).to eq 'amqp://mq:5672'
+      expect(amqp_config['LOG_LEVEL']).to eq 'error'
+    end
+  
+    it 'get parent value if not exists in child' do
+      config.run!
+      expect(amqp_config['DATABASE_URL']).to eq 'postgres://db:5432/test'
+      expect(amqp_config['REDIS_URL']).to eq 'redis://redis:6379'
+      expect(amqp_config['NAME']).to eq 'service'
+
+      expect(service_config['REDIS_URL']).to eq 'redis://redis:6379'
+      expect(service_config['NAME']).to eq 'service'
+      expect(service_config['DATABASE_URL']).to eq 'postgres://db:5432/test'
+
+      expect(config['NAME']).to eq 'root'
+      expect(config['REDIS_URL']).to eq 'redis://redis:6379'
+      expect{ config['DATABASE_URL'] }.to raise_error
+    end
+  
+  end
+
 end
 
