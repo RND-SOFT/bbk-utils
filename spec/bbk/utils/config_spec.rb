@@ -273,15 +273,24 @@ Environment variables:
     end
   
     it 'get values' do
-      config.run!({'REDIS_URL' => 'redis://localhost:6379', 'SERVICE_AMQP_URL' => 'amqp://mq:5672'})
+      config.run!({
+        'REDIS_URL' => 'redis://localhost:6379',
+        'SERVICE_AMQP_URL' => 'amqp://mq:5672',
+        'LOG_LEVEL' => 'debug',
+        'SERVICE_LOG_LEVEL' => 'info',
+        'SERVICE_AMQP_LOG_LEVEL' => 'error'
+      })
       expect(config['REDIS_URL']).to eq 'redis://localhost:6379'
       expect(config['SERVICE_DATABASE_URL']).to eq 'postgres://db:5432/test'
       expect(config['SERVICE_AMQP_URL']).to eq 'amqp://mq:5672'
+      expect(config['LOG_LEVEL']).to eq 'debug'
 
       expect(service_config['DATABASE_URL']).to eq 'postgres://db:5432/test'
       expect(service_config['AMQP_URL']).to eq 'amqp://mq:5672'
+      expect(service_config['LOG_LEVEL']).to eq 'info'
 
       expect(amqp_config['URL']).to eq 'amqp://mq:5672'
+      expect(amqp_config['LOG_LEVEL']).to eq 'error'
     end
   
     it 'get parent value if not exists in child' do
