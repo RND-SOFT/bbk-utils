@@ -163,7 +163,7 @@ module BBK
       end
 
       def as_json(*_args)
-        values = store_with_subconfigs.sort_by do |item|
+        values = store_with_subconfigs.values.sort_by do |item|
           [item[:file].present? ? 0 : 1, item[:required] ? 0 : 1]
         end.reduce({}) do |ret, item|
           ret.merge(item[:env] => item)
