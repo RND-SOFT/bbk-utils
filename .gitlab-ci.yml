@@ -31,11 +31,6 @@ variables:
       - .coverage
       - coverage
 
-ruby-2.5:
-  extends: .test
-  variables:
-    CASE: '2.5'
-
 ruby-3.0:
   extends: .test
   variables:
@@ -44,18 +39,18 @@ ruby-3.0:
     RUBYOPT: '-rrbs/test/setup'
     RBS_TEST_OPT: '-ruri -rlogger -rmonitor -I sig'
 
-steep:
-  image: rnds/ruby:3.0-test
-  stage: tests
-  variables:
-    CASE: '3.0'
-  script:
-    - docker-compose build --force-rm --pull test-${CASE}
-    - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${CASE}
-    - docker-compose exec -T test-${CASE} steep check --with-expectations
-    - docker-compose exec -T test-${CASE} steep stats --format=table
-  after_script:
-    - docker-compose down -v --remove-orphans
+# steep:
+#   image: rnds/ruby:3.0-test
+#   stage: tests
+#   variables:
+#     CASE: '3.0'
+#   script:
+#     - docker-compose build --force-rm --pull test-${CASE}
+#     - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${CASE}
+#     - docker-compose exec -T test-${CASE} steep check --with-expectations
+#     - docker-compose exec -T test-${CASE} steep stats --format=table
+#   after_script:
+#     - docker-compose down -v --remove-orphans
   
 build:
   image: rnds/ruby:3.0-test

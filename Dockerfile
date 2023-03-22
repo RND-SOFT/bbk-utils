@@ -19,7 +19,7 @@ ADD lib/bbk/utils/version.rb /home/app/lib/bbk/utils/
 
 RUN set -ex \
   && gem install bundler && gem update bundler \
-  && if [ "${RUBY_VERSION}" \> '3' ]; then gem install 'activesupport:~>6.0' 'steep:~>1.0.1'; fi \
+  && if [ "${RUBY_VERSION}" \> '3' ]; then gem install 'activesupport:~>6.0' 'steep:=1.0.1'; fi \
   && bundle install --jobs=3 --full-index \
   && rm -rf /tmp/* /var/tmp/* /usr/src/ruby /root/.gem /usr/local/bundle/cache
 

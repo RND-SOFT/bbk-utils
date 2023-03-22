@@ -40,7 +40,8 @@ module BBK
 
       class << self
 
-        delegate :map, :require, :optional, :run!, :[], :[]=, :content, :to_s, :to_json, :as_json, :to_yaml, :fetch,
+        delegate :map, :require, :optional, :run!, :[], :[]=, :content, :to_s,
+                 :to_json, :as_json, :to_yaml, :fetch, :root?,
                  to: :instance
 
       end
