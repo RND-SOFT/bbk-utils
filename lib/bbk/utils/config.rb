@@ -229,7 +229,7 @@ module BBK
 
         def normalize_key(key)
           return nil if key.nil?
-          key.to_s.upcase
+          key.to_s.upcase.gsub('-', '_')
         end
 
         def full_prefixed_key(key)
