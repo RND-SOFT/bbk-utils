@@ -25,7 +25,9 @@ variables:
   artifacts:
     reports:
       junit: rspec*.xml
-      cobertura: coverage*.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage*.xml
     name: "coverage"
     paths:
       - .coverage
