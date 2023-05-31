@@ -39,8 +39,9 @@ module BBK
 
       def self.default
         unless @default
-          @default = new(DEFAULT_NAME, DEFAULT_LEVEL)
-          @default.level = DEFAULT_LEVEL
+          level = ENV.fetch('LOG_LEVEL', DEFAULT_LEVEL)
+          @default = new(DEFAULT_NAME, level)
+          @default.level = level
         end
         @default
       end
