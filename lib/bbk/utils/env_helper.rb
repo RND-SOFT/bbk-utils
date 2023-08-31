@@ -6,9 +6,11 @@ module BBK
   module Utils
     module EnvHelper
 
-      def self.prepare_database_envs(env)
-        uri = build_uri_with_defaults(env)
-        apply_env_from_uri(env, uri)
+      DEFAULT_DATABASE_PREFIX = 'DATABASE'
+
+      def self.prepare_database_envs(env, prefix: DEFAULT_DATABASE_PREFIX)
+        uri = build_uri_with_defaults(env, prefix: prefix)
+        apply_env_from_uri(env, uri, prefix: prefix)
         env
       end
 
@@ -30,38 +32,38 @@ module BBK
         env
       end
 
-      def self.build_uri_with_defaults(env)
-        ::URI.parse(env['DATABASE_URL'] || '').tap do |uri|
-          uri.scheme    = env.fetch('DATABASE_ADAPTER', uri.scheme) || 'postgresql'
-          uri.user      = env.fetch('DATABASE_USER',    uri.user) || 'postgres'
-          uri.password  = env.fetch('DATABASE_PASS',    uri.password)
-          uri.hostname  = env.fetch('DATABASE_HOST',    uri.hostname) || 'db'
-          uri.port      = env.fetch('DATABASE_PORT',    uri.port) || 5432
+      def self.build_uri_with_defaults(env, prefix: DEFAULT_DATABASE_PREFIX)
+        ::URI.parse(env[prefixed_key(prefix, 'URL')] || '').tap do |uri|
+          uri.scheme    = env.fetch(prefixed_key(prefix, 'ADAPTER'), uri.scheme) || 'postgresql'
+          uri.user      = env.fetch(prefixed_key(prefix, 'USER'), uri.user) || 'postgres'
+          uri.password  = env.fetch(prefixed_key(prefix, 'PASS'),    uri.password)
+          uri.hostname  = env.fetch(prefixed_key(prefix, 'HOST'),    uri.hostname) || 'db'
+          uri.port      = env.fetch(prefixed_key(prefix, 'PORT'),    uri.port) || 5432
 
-          name = env.fetch('DATABASE_NAME', uri.path) || ''
+          name = env.fetch(prefixed_key(prefix, 'NAME'), uri.path) || ''
           name = "/#{name}" unless name.start_with?('/')
           uri.path = name
 
           if uri.query
             params = URI.decode_www_form(uri.query).to_h
-            params['pool'] = env.fetch('DATABASE_POOL', params['pool'])
+            params['pool'] = env.fetch(prefixed_key(prefix, 'POOL'), params['pool'])
             uri.query = URI.encode_www_form(params)
           end
         end
       end
 
-      def self.apply_env_from_uri(env, uri)
-        env['DATABASE_URL'] = uri.to_s
-        env['DATABASE_ADAPTER'] = uri.scheme
-        env['DATABASE_USER'] = uri.user
-        env['DATABASE_PASS'] = uri.password
-        env['DATABASE_HOST'] = uri.hostname
-        env['DATABASE_PORT'] = uri.port.to_s
-        env['DATABASE_NAME'] = uri.path[1..-1]
+      def self.apply_env_from_uri(env, uri, prefix: DEFAULT_DATABASE_PREFIX)
+        env[prefixed_key(prefix, 'URL')] = uri.to_s
+        env[prefixed_key(prefix, 'ADAPTER')] = uri.scheme
+        env[prefixed_key(prefix, 'USER')] = uri.user
+        env[prefixed_key(prefix, 'PASS')] = uri.password
+        env[prefixed_key(prefix, 'HOST')] = uri.hostname
+        env[prefixed_key(prefix, 'PORT')] = uri.port.to_s
+        env[prefixed_key(prefix, 'NAME')] = uri.path[1..-1]
 
         if uri.query
           params = URI.decode_www_form(uri.query).to_h
-          env['DATABASE_POOL'] = params['pool']
+          env[prefixed_key(prefix, 'POOL')] = params['pool']
         end
       end
 
@@ -103,6 +105,11 @@ module BBK
           uri.path.gsub(%r{\A/}, '')
         end
         env['MQ_VHOST'] = vhost
+      end
+
+
+      def self.prefixed_key(prefix, name)
+        [prefix, name].select(&:present?).join('_')
       end
 
     end
