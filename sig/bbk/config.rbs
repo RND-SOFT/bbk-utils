@@ -17,7 +17,7 @@ module BBK
 
       type typeCaster = _CallableCaster | _ClassCaster
       type configItem = {env: String, file: String?, required: bool, desc: String?, bool: bool, value: untyped, default: untyped, type: typeCaster?}
-      type envSource = _ENV | ENVClass
+      type envSource = ENVClass | _ENV  | Hash[String, String?]
 
       attr_accessor store: untyped
       attr_accessor name: String?
