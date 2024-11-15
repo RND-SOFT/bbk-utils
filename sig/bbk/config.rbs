@@ -17,7 +17,7 @@ module BBK
 
       type typeCaster = _CallableCaster | _ClassCaster
       type configItem = {env: String, file: String?, required: bool, desc: String?, bool: bool, value: untyped, default: untyped, type: typeCaster?}
-      type envSource = ENVClass | _ENV  | Hash[String, String?]
+      type envSource = ENVClass | _ENV
 
       attr_accessor store: untyped
       attr_accessor name: String?
@@ -25,9 +25,9 @@ module BBK
       def self.instance: () -> instance
       
       def initialize: (?name: String?, ?prefix: String?, ?parent: BBK::Utils::Config?) -> void
-      def map: (envSource env, String file, ?required: bool, ?desc: String, ?bool: bool, ?key: String) -> void
-      def require: (envSource env, ?desc: String?, ?bool: bool, ?type: typeCaster, ?key: String?) -> void
-      def optional: (envSource env, ?default: untyped, ?desc: String, ?bool: bool, ?type: typeCaster, ?key: String) -> void
+      def map: (envSource env, String file, ?required: bool, ?desc: String, ?bool: bool, ?key: String, ?rewrite: bool) -> void
+      def require: (envSource env, ?desc: String?, ?bool: bool, ?type: typeCaster, ?key: String?, ?rewrite: bool) -> void
+      def optional: (envSource env, ?default: untyped, ?desc: String, ?bool: bool, ?type: typeCaster, ?key: String, ?rewrite: bool) -> void
 
       def run!: (?envSource source) -> void
       def []: (String key) -> untyped
