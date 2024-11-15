@@ -4,7 +4,7 @@ module BBK
   module Utils
     class Config
 
-      PREFIX_SEP = '_'.freeze
+      PREFIX_SEP = '_'
 
       attr_accessor :store, :name
       attr_reader :prefix, :env_prefix, :parent
@@ -60,8 +60,11 @@ module BBK
         @env_prefix = normalize_key(@prefixes.join(PREFIX_SEP))
       end
 
-      def map(env, file, required: true, desc: nil, bool: false, key: nil)
-        @store[full_prefixed_key(env)] = {
+      def map(env, file, required: true, desc: nil, bool: false, key: nil, rewrite: true)
+        conf_key = full_prefixed_key(env)
+        return if @store.key?(conf_key) && !rewrite
+
+        @store[conf_key] = {
           env:      full_prefixed_key(key || env),
           file:     file,
           required: required,
@@ -71,11 +74,14 @@ module BBK
         }
       end
 
-      def require(env, desc: nil, bool: false, type: nil, key: nil)
+      def require(env, desc: nil, bool: false, type: nil, key: nil, rewrite: true)
         raise ArgumentError.new('Specified type and bool') if bool && type.present?
 
         type = BBK::Config::BooleanCaster.singleton_method(:cast) if bool
-        @store[full_prefixed_key(env)] = {
+        conf_key = full_prefixed_key(env)
+        return if @store.key?(conf_key) && !rewrite
+
+        @store[conf_key] = {
           env:      full_prefixed_key(key || env),
           file:     nil,
           required: true,
@@ -85,11 +91,14 @@ module BBK
         }
       end
 
-      def optional(env, default: nil, desc: nil, bool: false, type: nil, key: nil)
+      def optional(env, default: nil, desc: nil, bool: false, type: nil, key: nil, rewrite: true)
         raise ArgumentError.new('Specified type and bool') if bool && type.present?
 
         type = BBK::Utils::Config::BooleanCaster.singleton_method(:cast) if bool
-        @store[full_prefixed_key(env)] = {
+        conf_key = full_prefixed_key(env)
+        return if @store.key?(conf_key) && !rewrite
+
+        @store[conf_key] = {
           env:      full_prefixed_key(key || env),
           file:     nil,
           required: false,
@@ -104,17 +113,16 @@ module BBK
         @store.each_value do |item|
           process(source, item)
         end
-        @subconfigs.each {|sub| sub.run!(source)}
+        @subconfigs.each {|sub| sub.run!(source) }
         nil
       end
 
-      def subconfig(prefix: , name: nil)
+      def subconfig(prefix:, name: nil)
         raise ArgumentError.new("Subconfig with prefix #{prefix} already exists") if @subconfigs.any? {|sub| sub.prefix == prefix.to_s }
+
         sub = self.class.new(name: name, prefix: prefix, parent: self)
         @subconfigs << sub
-        if block_given?
-          yield sub
-        end
+        yield sub if block_given?
         sub
       end
 
@@ -187,48 +195,43 @@ module BBK
 
       protected
 
-      def prefixes
-        @prefixes
-      end
+        attr_reader :prefixes
 
-      def get(key, search_up: false, search_down: false)
-        normalized_key = normalize_key(key)
-        if @store.key?(normalized_key)
-          return @store[normalized_key]
-        end
-        prefix_key = full_prefixed_key(key)
-        if @store.key?(prefix_key)
-          return @store[prefix_key]
-        end
-        if search_down
-          sub_prefixed_keys(key).each do |pref_key|
-            if @store.key?(pref_key)
-              return @store[pref_key]
+        def get(key, search_up: false, search_down: false)
+          normalized_key = normalize_key(key)
+          return @store[normalized_key] if @store.key?(normalized_key)
+
+          prefix_key = full_prefixed_key(key)
+          return @store[prefix_key] if @store.key?(prefix_key)
+
+          if search_down
+            sub_prefixed_keys(key).each do |pref_key|
+              return @store[pref_key] if @store.key?(pref_key)
+
+              subconf = @subconfigs.find {|sub| pref_key.starts_with?(sub.env_prefix) }
+              next if subconf.nil?
+
+              return subconf.get(pref_key, search_up: false, search_down: true)
             end
-
-            subconf = @subconfigs.find {|sub| pref_key.starts_with?(sub.env_prefix)}
-            next if subconf.nil?
-            return subconf.get(pref_key, search_up: false, search_down: true)
           end
-        end
-        if search_up && @parent
-          return @parent.get(key, search_up: true, search_down: false)
-        end
-        raise KeyError.new("There is no such key: #{key} in config!")
-      end
+          return @parent.get(key, search_up: true, search_down: false) if search_up && @parent
 
-      def store_with_subconfigs
-        res = @store.dup
-        @subconfigs.each do |sub|
-          res = res.merge(sub.store_with_subconfigs)
+          raise KeyError.new("There is no such key: #{key} in config!")
         end
-        res
-      end
+
+        def store_with_subconfigs
+          res = @store.dup
+          @subconfigs.each do |sub|
+            res = res.merge(sub.store_with_subconfigs)
+          end
+          res
+        end
 
       private
 
         def normalize_key(key)
           return nil if key.nil?
+
           key.to_s.upcase.gsub('-', '_')
         end
 
