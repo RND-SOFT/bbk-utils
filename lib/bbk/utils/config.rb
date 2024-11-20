@@ -257,7 +257,7 @@ module BBK
 
           # Если данные есть, либо указан тип (нужно для того чтобы переменная была нужного типа)
           if content.present? || item[:type].present?
-            if file = item[:file]
+            if (file = item[:file])
               dirname = File.dirname(file)
               FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
               File.write(file, content)
@@ -276,7 +276,11 @@ module BBK
           elsif item[:required]
             required!(item)
           else
-            item[:value] = content
+            item[:value] = if (file = item[:file]).present? && File.exist?(file)
+              file
+            else
+              content
+            end
           end
         rescue StandardError => e
           msg = "Failed processing #{item[:env]} parameter. #{e.inspect}"
