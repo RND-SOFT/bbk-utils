@@ -15,7 +15,7 @@ module BBK
 
       def call(severity, time, progname, msg)
         line = msg2str(msg).gsub("\n", '\\n')
-        line = "#{tags_text}#{line}"
+        line = "#{build_tags_text}#{line}"
         format(FORMAT, severity, format_datetime(time.utc), Process.pid, progname, thread_id, line)
       end
 
@@ -32,7 +32,7 @@ module BBK
         end
       end
 
-      private def tags_text
+      private def build_tags_text
         @tags.collect { "[#{_1}] " }.join if @tags.any?
       end
 
