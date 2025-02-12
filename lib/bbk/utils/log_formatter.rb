@@ -5,9 +5,17 @@ require 'logger'
 module BBK
   module Utils
     class LogFormatter < ::Logger::Formatter
+
       FORMAT = "%5s [%sUTC #%d] (%s)[%s]: %s\n"
+
+      def initialize(tags: [])
+        super()
+        @tags = tags
+      end
+
       def call(severity, time, progname, msg)
         line = msg2str(msg).gsub("\n", '\\n')
+        line = "#{tags_text}#{line}"
         format(FORMAT, severity, format_datetime(time.utc), Process.pid, progname, thread_id, line)
       end
 
@@ -19,8 +27,16 @@ module BBK
       end
 
       def thread_name_from_main
-        Thread.current[:bbk_thread_id] ||= "#{Thread.main.name}-#{Thread.current.object_id}" if Thread.main.name
+        if Thread.main.name
+          Thread.current[:bbk_thread_id] ||= "#{Thread.main.name}-#{Thread.current.object_id}"
+        end
       end
+
+      private def tags_text
+        @tags.collect { "[#{_1}] " }.join if @tags.any?
+      end
+
     end
   end
 end
+
