@@ -13,7 +13,7 @@ module BBK
 
       def self.new(*args, **kwargs)
         instance = super
-        ActiveSupport::TaggedLogging.new(instance)
+        ActiveSupport::TaggedLogging.new(instance).tagged
       end
 
       def initialize(progname, level, io: STDOUT, tags: [])
