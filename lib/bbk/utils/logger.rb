@@ -14,7 +14,7 @@ module BBK
       def self.new(*args, **kwargs)
         instance = super
         yield(instance) if block_given?
-        ActiveSupport::TaggedLogging.new(instance).tagged
+        ActiveSupport::TaggedLogging.new(instance)
       end
 
       def initialize(progname, level, io: STDOUT, tags: [], **kwargs)
