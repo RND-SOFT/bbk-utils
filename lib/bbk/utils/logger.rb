@@ -13,6 +13,7 @@ module BBK
 
       def self.new(*args, **kwargs)
         instance = super
+        yield(instance) if block_given?
         ActiveSupport::TaggedLogging.new(instance).tagged
       end
 
