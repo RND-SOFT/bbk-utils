@@ -17,9 +17,9 @@ module BBK
         ActiveSupport::TaggedLogging.new(instance).tagged
       end
 
-      def initialize(progname, level, io: STDOUT, tags: [])
+      def initialize(progname, level, io: STDOUT, tags: [], **kwargs)
         io.sync = true
-        super(io)
+        super(io, **kwargs)
         self.progname = progname
 
         if level.is_a?(Integer)
@@ -30,7 +30,7 @@ module BBK
           self.level = Logger.const_get(level)
         end
 
-        self.formatter = LogFormatter.new tags: tags
+        self.formatter ||= LogFormatter.new tags: tags
         info "Using LOG_LEVEL=#{level}"
       end
 
