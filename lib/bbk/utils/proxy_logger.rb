@@ -22,7 +22,7 @@ module BBK
       def method_missing(method, *args, &block)
         super unless logger.respond_to?(method)
 
-        if @tagged
+        if @tagged && logger.formatter.respond_to?(:current_tags)
           current_tags = tags - logger.formatter.current_tags
           logger.tagged(current_tags) { logger.send(method, *args, &block) }
         else
