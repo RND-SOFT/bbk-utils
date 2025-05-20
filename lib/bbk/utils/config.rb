@@ -38,6 +38,10 @@ module BBK
         @instance ||= new(prefix: prefix)
       end
 
+      def self.parse_bool_value(value)
+        BooleanCaster.cast(value)
+      end
+
       class << self
 
         delegate :map, :require, :optional, :run!, :[], :[]=, :content, :to_s,
