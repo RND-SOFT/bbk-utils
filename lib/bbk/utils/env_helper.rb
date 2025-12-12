@@ -33,22 +33,24 @@ module BBK
       end
 
       def self.build_uri_with_defaults(env, prefix: DEFAULT_DATABASE_PREFIX)
-        ::URI.parse(env[prefixed_key(prefix, 'URL')] || '').tap do |uri|
-          uri.scheme    = env.fetch(prefixed_key(prefix, 'ADAPTER'), uri.scheme) || 'postgresql'
-          uri.user      = env.fetch(prefixed_key(prefix, 'USER'), uri.user) || 'postgres'
-          uri.password  = env.fetch(prefixed_key(prefix, 'PASS'),    uri.password)
-          uri.hostname  = env.fetch(prefixed_key(prefix, 'HOST'),    uri.hostname) || 'db'
-          uri.port      = env.fetch(prefixed_key(prefix, 'PORT'),    uri.port) || 5432
+        ::URI.parse(env[prefixed_key(prefix, 'URL')] || '').then do |uri|
+          result = uri.clone
+          result.scheme    = env.fetch(prefixed_key(prefix, 'ADAPTER'), uri.scheme) || 'postgresql'
+          result.hostname  = env.fetch(prefixed_key(prefix, 'HOST'),    uri.hostname) || 'db'
+          result.port      = env.fetch(prefixed_key(prefix, 'PORT'),    uri.port) || 5432
+          result.user      = env.fetch(prefixed_key(prefix, 'USER'), uri.user) || 'postgres'
+          result.password  = env.fetch(prefixed_key(prefix, 'PASS'), uri.password)
 
           name = env.fetch(prefixed_key(prefix, 'NAME'), uri.path) || ''
           name = "/#{name}" unless name.start_with?('/')
-          uri.path = name
+          result.path = name
 
           if uri.query
             params = URI.decode_www_form(uri.query).to_h
             params['pool'] = env.fetch(prefixed_key(prefix, 'POOL'), params['pool'])
-            uri.query = URI.encode_www_form(params)
+            result.query = URI.encode_www_form(params)
           end
+          result
         end
       end
 
@@ -76,17 +78,19 @@ module BBK
                            URI.parse(url).hostname || 'mq').split(/[;|]/)].flatten.select(&:present?).uniq
 
         hosts.map do |host|
-          URI.parse(url).tap do |uri|
-            uri.scheme   = uri.scheme || 'amqps'
-            uri.hostname = host
-            uri.port     = env.fetch('MQ_PORT', uri.port) || 5671
-            uri.user     = env.fetch('MQ_USER', uri.user)
-            uri.password = env.fetch('MQ_PASS', uri.password)
+          URI.parse(url).then do |uri|
+            result = uri.clone
+            result.scheme   = uri.scheme || 'amqps'
+            result.hostname = host
+            result.port     = env.fetch('MQ_PORT', uri.port) || 5671
+            result.user     = env.fetch('MQ_USER', uri.user)
+            result.password = env.fetch('MQ_PASS', uri.password)
 
             vhost = [env.fetch('MQ_VHOST', uri.path), '/'].find(&:present?)
             vhost = "/#{vhost}" unless vhost.start_with?('/')
 
-            uri.path = vhost
+            result.path = vhost
+            result
           end
         end
       end
@@ -106,7 +110,6 @@ module BBK
         end
         env['MQ_VHOST'] = vhost
       end
-
 
       def self.prefixed_key(prefix, name)
         [prefix, name].select(&:present?).join('_')
