@@ -5,6 +5,7 @@ module BBK
     class Config
 
       PREFIX_SEP = '_'
+      FILTERED_VALUE = '[FILTERED]'
 
       attr_accessor :store, :name
       attr_reader :prefix, :env_prefix, :parent
@@ -78,7 +79,7 @@ module BBK
         }
       end
 
-      def require(env, desc: nil, bool: false, type: nil, key: nil, rewrite: true)
+      def require(env, desc: nil, bool: false, type: nil, key: nil, rewrite: true, secure: false)
         raise ArgumentError.new('Specified type and bool') if bool && type.present?
 
         type = BBK::Config::BooleanCaster.singleton_method(:cast) if bool
@@ -91,11 +92,12 @@ module BBK
           required: true,
           desc:     desc,
           bool:     bool,
-          type:     type
+          type:     type,
+          secure:   secure
         }
       end
 
-      def optional(env, default: nil, desc: nil, bool: false, type: nil, key: nil, rewrite: true)
+      def optional(env, default: nil, desc: nil, bool: false, type: nil, key: nil, rewrite: true, secure: false)
         raise ArgumentError.new('Specified type and bool') if bool && type.present?
 
         type = BBK::Utils::Config::BooleanCaster.singleton_method(:cast) if bool
@@ -109,7 +111,8 @@ module BBK
           default:  default,
           desc:     desc,
           bool:     true,
-          type:     type
+          type:     type,
+          secure:   secure
         }
       end
 
@@ -313,15 +316,26 @@ module BBK
 
         def print_item(item, padding)
           line = padding + wrap_required(item)
-          line += " (=#{item[:default]})" if item[:default].present?
+          if item[:default].present?
+            def_value = if item[:secure]
+              FILTERED_VALUE
+            else
+              item[:default]
+            end
+            line += " (=#{def_value})"
+          end
 
           line = if item[:desc].present?
             "#{line.ljust(50)} #{item[:desc]}"
           else
             line
           end
-
-          "#{line}\n#{padding * 2}-> #{item[:value].inspect}"
+          value = if item[:secure]
+            FILTERED_VALUE
+          else
+            item[:value].inspect
+          end
+          "#{line}\n#{padding * 2}-> #{value}"
         end
 
         def wrap_required(item)
