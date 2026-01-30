@@ -16,7 +16,7 @@ variables:
   script:
     - docker-compose build --force-rm --pull test
     - docker-compose up --force-recreate -t 1 --remove-orphans -d test
-    - docker-compose exec -T test rspec | tee .coverage
+    - docker-compose exec -T test bundle exec rspec | tee .coverage
     - docker-compose exec -T test cat rspec.xml > rspec-${RUBY_VERSION}.xml
     - docker-compose exec -T test cat coverage/coverage.xml > coverage-${RUBY_VERSION}.xml
   after_script:
@@ -47,7 +47,7 @@ ruby-3.4:
     RUBY_VERSION: '3.4'
     RBS_TEST_TARGET: 'BBK::Utils::*'
     RUBYOPT: '-rrbs/test/setup'
-    RBS_TEST_OPT: '-ruri -rlogger -rmonitor -I sig'
+    RBS_TEST_OPT: '-ruri -rlogger -rterminal-table -rmonitor -I sig'
 
 # steep:
 #   image: rnds/ruby:3.0-test
