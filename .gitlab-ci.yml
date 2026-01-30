@@ -33,10 +33,10 @@ variables:
       - .coverage
       - coverage
 
-ruby-3.0:
+ruby-3.2:
   extends: .test
   variables:
-    CASE: '3.0'
+    RUBY_VERSION: '3.2'
     RBS_TEST_TARGET: 'BBK::Utils::*'
     RUBYOPT: '-rrbs/test/setup'
     RBS_TEST_OPT: '-ruri -rlogger -rmonitor -I sig'
@@ -58,8 +58,7 @@ build:
   image: rnds/ruby:3.0-test
   stage: build
   script:
-    - bundle install --jobs=3 --path vendor/bundle && bundle package --all
-    - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'` 
+    - gem build `ls | grep gemspec`
   cache:
     paths:
       - vendor/bundle
