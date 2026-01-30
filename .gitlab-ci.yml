@@ -14,11 +14,11 @@ variables:
     GIT_BRANCH: ${CI_COMMIT_REF_NAME}
     GIT_COMMIT: ${CI_COMMIT_SHA}
   script:
-    - docker-compose build --force-rm --pull test-${CASE}
-    - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${CASE}
-    - docker-compose exec -T test-${CASE} rspec | tee .coverage
-    - docker-compose exec -T test-${CASE} cat rspec.xml > rspec-${CASE}.xml
-    - docker-compose exec -T test-${CASE} cat coverage/coverage.xml > coverage-${CASE}.xml
+    - docker-compose build --force-rm --pull test-${RUBY_VERSION}
+    - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${RUBY_VERSION}
+    - docker-compose exec -T test rspec | tee .coverage
+    - docker-compose exec -T test cat rspec.xml > rspec-${RUBY_VERSION}.xml
+    - docker-compose exec -T test cat coverage/coverage.xml > coverage-${RUBY_VERSION}.xml
   after_script:
     - docker-compose down -v --remove-orphans
   coverage: '/\(\d+.\d+\%\) covered/'
@@ -37,6 +37,14 @@ ruby-3.2:
   extends: .test
   variables:
     RUBY_VERSION: '3.2'
+    RBS_TEST_TARGET: 'BBK::Utils::*'
+    RUBYOPT: '-rrbs/test/setup'
+    RBS_TEST_OPT: '-ruri -rlogger -rmonitor -I sig'
+    
+ruby-3.4:
+  extends: .test
+  variables:
+    RUBY_VERSION: '3.4'
     RBS_TEST_TARGET: 'BBK::Utils::*'
     RUBYOPT: '-rrbs/test/setup'
     RBS_TEST_OPT: '-ruri -rlogger -rmonitor -I sig'
