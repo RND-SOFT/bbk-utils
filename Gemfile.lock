@@ -4,7 +4,6 @@ PATH
     bbk-utils (1.1.5)
       activesupport (>= 7.0)
       russian
-      securerandom
 
 GEM
   remote: https://rubygems.org/
@@ -124,7 +123,7 @@ GEM
       virtus (~> 1.0)
     russian (0.6.0)
       i18n (>= 0.5.0)
-    securerandom (0.3.2)
+    securerandom (0.4.1)
     sexp_processor (4.16.0)
     simplecov (0.21.2)
       docile (~> 1.1)
