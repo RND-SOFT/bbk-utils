@@ -71,6 +71,7 @@ GEM
     path_expander (1.1.0)
     prism (1.9.0)
     public_suffix (4.0.6)
+    racc (1.8.1)
     rainbow (3.0.0)
     rake (12.3.3)
     reek (6.0.6)
@@ -160,6 +161,7 @@ DEPENDENCIES
   bundler (~> 2.0)
   byebug
   faker (~> 2.4)
+  racc
   rake (~> 12.0)
   rspec (~> 3.0)
   rspec_junit_formatter
