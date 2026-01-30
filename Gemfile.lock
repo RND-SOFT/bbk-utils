@@ -4,7 +4,7 @@ PATH
     bbk-utils (1.1.5)
       activesupport (>= 7.0)
       russian
-      securerandom (~> 0.3.2)
+      securerandom
 
 GEM
   remote: https://rubygems.org/
