@@ -28,6 +28,7 @@ ADD . /home/app/
 RUN set -ex \
   && bundle update --bundler \
   && bundle install --jobs=3 \
+  && bundle clean --force \
   && rm -rf /tmp/* /var/tmp/* /usr/src/ruby /root/.gem /usr/local/bundle/cache
 
 CMD ["tail", "-f", "/dev/null"]
