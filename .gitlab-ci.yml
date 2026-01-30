@@ -47,7 +47,7 @@ ruby-3.4:
     RUBY_VERSION: '3.4'
     RBS_TEST_TARGET: 'BBK::Utils::*'
     RUBYOPT: '-rrbs/test/setup'
-    RBS_TEST_OPT: '-ruri -rlogger -rterminal-table -rmonitor -I sig'
+    RBS_TEST_OPT: '-ruri -rlogger -rmonitor -I sig'
 
 # steep:
 #   image: rnds/ruby:3.0-test
