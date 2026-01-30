@@ -45,9 +45,6 @@ ruby-3.4:
   extends: .test
   variables:
     RUBY_VERSION: '3.4'
-    RBS_TEST_TARGET: 'BBK::Utils::*'
-    RUBYOPT: '-rrbs/test/setup'
-    RBS_TEST_OPT: '-ruri -rlogger -rmonitor -I sig'
 
 # steep:
 #   image: rnds/ruby:3.0-test
