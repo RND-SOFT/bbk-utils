@@ -170,6 +170,7 @@ DEPENDENCIES
   simplecov
   simplecov-cobertura
   simplecov-console
+  terminal-table
 
 BUNDLED WITH
    2.2.33
