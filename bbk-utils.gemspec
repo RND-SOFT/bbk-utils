@@ -19,7 +19,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'activesupport', '>= 7.0'
-  spec.add_runtime_dependency 'securerandom', '~> 0.3.2'
   spec.add_runtime_dependency 'russian'
 
   spec.add_development_dependency 'bundler', '~> 2.0'
@@ -27,10 +26,12 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 12.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
 
+  spec.add_development_dependency 'terminal-table'
   spec.add_development_dependency 'byebug'
   spec.add_development_dependency 'rspec_junit_formatter'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-rspec'
+  spec.add_development_dependency 'racc'
   spec.add_development_dependency 'rubycritic'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'simplecov-console'
