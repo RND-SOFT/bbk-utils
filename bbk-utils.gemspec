@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-rspec'
   spec.add_development_dependency 'racc'
+  spec.add_development_dependency 'ostruct'
   spec.add_development_dependency 'rubycritic'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'simplecov-console'
