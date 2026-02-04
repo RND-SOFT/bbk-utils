@@ -1,13 +1,17 @@
 # BBK::Utils
 
+<div style="text-align:center" _render="для YARD чтоб внтури сделать markdown">
+
 [![Gem Version](https://badge.fury.io/rb/bbk-utils.svg)](https://rubygems.org/gems/bbk-utils)
 [![Gem](https://img.shields.io/gem/dt/bbk-utils.svg)](https://rubygems.org/gems/bbk-utils/versions)
-[![YARD](https://badgen.net/badge/YARD/doc/blue)](http://www.rubydoc.info/gems/bbk-utils)
+[![YARD](https://lysander.rnds.pro/api/v1/badgen/YARD/doc/blue)](http://www.rubydoc.info/gems/bbk-utils)
 
 [![Coverage](https://lysander.rnds.pro/api/v1/badges/bbkutils_coverage.svg)](https://lysander.rnds.pro/api/v1/badges/bbkutils_coverage.html)
 [![Quality](https://lysander.rnds.pro/api/v1/badges/bbkutils_quality.svg)](https://lysander.rnds.pro/api/v1/badges/bbkutils_quality.html)
 [![Outdated](https://lysander.rnds.pro/api/v1/badges/bbkutils_outdated.svg)](https://lysander.rnds.pro/api/v1/badges/bbkutils_outdated.html)
 [![Vulnerabilities](https://lysander.rnds.pro/api/v1/badges/bbkutils_vulnerable.svg)](https://lysander.rnds.pro/api/v1/badges/bbkutils_vulnerable.html)
+
+</div>
 
 Common classes and helpers for BBK library stack.
 
