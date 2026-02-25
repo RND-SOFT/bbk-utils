@@ -1,12 +1,13 @@
 require 'yaml'
 require 'optparse'
 
-
+require_relative 'env/category_builder'
+require_relative 'env/markdown_table'
+                      
 module BBK
   module Utils
     module Cli
       class EnvDocs
-
         def self.run(*args) new.run(*args) end
 
         def run(*args)
@@ -26,138 +27,106 @@ module BBK
                options[:output] = o
              end
 
+             opts.on("-g", "--categories CATEGORIES", "Path to categories output file (sample: ./env_categories.json)") do |g|
+               options[:categories] = g
+             end
+
              opts.on("-h", "--help", "Prints this help") do
                puts opts
                exit
              end
           end.parse!(args)
 
-          output_file = Rails.root.join(options[:output])
-          config_file = Rails.root.join(options[:config])
-
-          if File.exist?(config_file)
-            config = YAML.load_file(config_file) || {}
-          else
-            puts "Config file not found: #{config_file}. Continuing without config."
-            config = {}
-          end
-
-          cfg = BBK::Utils::Config.instance.as_json.deep_dup
-          cfg = cfg[BBK::Utils::Config.instance.name] unless BBK::Utils::Config.instance.name.nil?
+          bbk_cfg = BBK::Utils::Config.instance.as_json.deep_dup
+          bbk_cfg = bbk_cfg[BBK::Utils::Config.instance.name] unless BBK::Utils::Config.instance.name.nil?
 
           BBK::Utils::Config.instance.send(:store_with_subconfigs).each do |k, v|
             if v[:default]&.class&.to_s == "Fugit::Duration"
-              cfg[k][:default] = v[:default].original
+              bbk_cfg[k][:default] = v[:default].original
             end
 
-            if v[:default]
-              cfg[k][:class] = "#{v[:default].class}"
+            unless v[:default].nil?
+              bbk_cfg[k][:_class] = "#{v[:default].class}"
             end
           end
 
-          env_prefix_order = config.fetch('env_prefix_order', [])
+          builder = Env::CategoryBuilder.new(
+            bbk_cfg,
+            Rails.root.join(options[:config]), # TODO этот генератор только для Rails?
+            "#{__dir__}/env_docs.yml"
+          )
+          # Получаем категории с переменными
+          categories = builder.run
 
-          matching, remaining = separate(cfg, env_prefix_order)
-
-          File.open(output_file, 'w') do |file|
-            file.puts "# Переменные окружения\n\n"
-            file.puts to_markdown(matching)
-            file.puts "\n\n"
-            file.puts to_markdown(remaining.sort)
+          if options[:categories]
+            File.open(Rails.root.join(options[:categories]), 'w') do |file|
+              file << builder.categories_inspect(categories)
+            end
           end
 
-          puts "Documentation saved to: #{output_file}"
+          markdown_opts = {
+            columns: { env: "Название", _class: "Тип", desc: "Описание", default: "Умолчание" },
+            alignments: { 1 => :center, 3 => :center }, # :left, :right, :center для каждой колонки
+            wrappers: { 1 => "`", 3 => "`" }, # символ или строка для обрамления значений колонки, например: "`", "```", "**"
+            title_level: 4, # уровень заголовка от 1 до 6
+            warning: {
+              column_index: 2,
+              mode: :inline  # :footnote или :inline
+            }
+          }
+
+          File.open(Rails.root.join(options[:output]), 'w') do |file|
+            file << generate_documentation(categories, markdown_opts)
+          end
+
+          puts "Documentation saved to: #{options[:output]}"
         end
 
-        def separate(cfg, env_prefix_order)
-          matching = {}
-          remaining = {}
+        # генерация документации из всех категорий
+        def generate_documentation(categories, markdown_opts = {})
+          markdown_parts = []
 
-          cfg.each do |key, value|
-            matched = env_prefix_order.any? do |prefix|
-              key == prefix || key.start_with?(prefix + '_')
-            end
+          categories.each do |category_id, category|
+            # Пропускаем категории без переменных
+            next if category.env_vars.empty?
 
-            if matched
-              matching[key] = value
-            else
-              remaining[key] = value
-            end
+            # Подготавливаем данные для to_markdown
+            category_data = {
+              category_data: {
+                id: category.id,
+                name: category.name,
+                name_ru: category.name_ru,
+                desc: category.desc,
+                desc_ru: category.desc_ru
+              },
+              env_vars: category.sorted_env_vars
+            }
+
+            # Генерируем markdown для категории
+            markdown_parts << Env.to_markdown(category_data, markdown_opts)
+            markdown_parts << "\n\n\n"
           end
 
-          [matching, remaining]
+          markdown_parts.join
         end
 
-        def to_markdown(cfg, columns = { :env => "Название", :desc => "Описание", :default => "По умолчанию", :class => "Тип"} )
-          rows = cfg_to_array(cfg, columns.keys)
-
-          create_markdown_table(rows, columns.values)
-        end
-
-
-        def cfg_to_array(cfg, keys)
-          cfg.each_with_object([]) do |entry, rows|
-            rows << keys.each_with_object([]) do |key, row|
-              row << entry[1][key]
-            end
-          end
-        end
-
-        def create_markdown_table(rows, headers = [])
-          return "| No data |" if rows.empty?
-
-          column_widths = if headers.size != 0
-            headers.map(&:size)
-          else
-            Array.new(rows[0].count, 0)
-          end
-
-          rows.each do |row|
-            row.each_with_index do |string, i|
-              column_widths[i] = string.to_s.size if string.present? && string.to_s.size > column_widths[i]
-            end
-          end
-
-          markdown_table = []
-
-          # Создаем заголовок таблицы, если он есть
-          if headers.size != 0
-            header_string = "|"
-            separator_string = "|"
-
-            headers.each_with_index do |header, col|
-              header_string += " #{header.ljust(column_widths[col])} |"
-              separator_string += "-#{'-' * column_widths[col]}-|"
-            end
-
-            markdown_table << header_string
-            markdown_table << separator_string
-          end
-
-          # Создаем строки данных
-          rows_string = []
-          rows.each do |row|
-            row_string = "|"
-            row.each_with_index do |data, col|
-              value = (data || '').to_s
-              row_string += " #{value.ljust(column_widths[col])} |"
-            end
-            rows_string << row_string
-          end
-          markdown_table += rows_string
-
-        end
       end
     end
   end
 end
 
-#   "BILLING_ENABLED"=>
-#    {:env=>"BILLING_ENABLED",
-#     :file=>nil,
-#     :required=>false,
-#     :default=>false,
-#     :desc=>"Send data to billing by api",
-#     :bool=>true,
-#     :type=>
-#      #<Method: BBK::Utils::Config::BooleanCaster.cast(value) /home/user/.asdf/installs/ruby/3.2.2/lib/ruby/gems/3.2.0/gems/bbk-utils-1.1.2.304819/lib/bbk/utils/config.rb:27      
+# пример одного элемента bbk_cfg после преобразований и до засовывания в Env::CategoryBuilder
+#  "BILLING_ENABLED": {
+#    "env": "BILLING_ENABLED",
+#    "file": null,
+#    "required": false,
+#    "default": false,
+#    "desc": "Send data to billing by api",
+#    "bool": true,
+#    "type": "#<Method: BBK::Utils::Config::BooleanCaster.cast(value) /home/user/dev/rndsoft/aggredator/consumers/bbk/utils/lib/bbk/utils/config.rb:28>",
+#    "secure": false,
+#    "category": null,
+#    "warning": null,
+#    "value": false,
+#    "_class": "FalseClass"
+#  },

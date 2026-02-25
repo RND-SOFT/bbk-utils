@@ -65,7 +65,7 @@ module BBK
         @env_prefix = normalize_key(@prefixes.join(PREFIX_SEP))
       end
 
-      def map(env, file, required: true, desc: nil, bool: false, key: nil, rewrite: true)
+      def map(env, file, required: true, desc: nil, bool: false, key: nil, rewrite: true, category: nil, warning: nil)
         conf_key = full_prefixed_key(env)
         return if @store.key?(conf_key) && !rewrite
 
@@ -75,11 +75,13 @@ module BBK
           required: required,
           desc:     desc,
           bool:     bool,
-          type:     nil
+          type:     nil,
+          category: category,
+          warning:  warning
         }
       end
 
-      def require(env, desc: nil, bool: false, type: nil, key: nil, rewrite: true, secure: false)
+      def require(env, desc: nil, bool: false, type: nil, key: nil, rewrite: true, secure: false, category: nil, warning: nil)
         raise ArgumentError.new('Specified type and bool') if bool && type.present?
 
         type = BBK::Config::BooleanCaster.singleton_method(:cast) if bool
@@ -93,11 +95,13 @@ module BBK
           desc:     desc,
           bool:     bool,
           type:     type,
-          secure:   secure
+          secure:   secure,
+          category: category,
+          warning:  warning
         }
       end
 
-      def optional(env, default: nil, desc: nil, bool: false, type: nil, key: nil, rewrite: true, secure: false)
+      def optional(env, default: nil, desc: nil, bool: false, type: nil, key: nil, rewrite: true, secure: false, category: nil, warning: nil)
         raise ArgumentError.new('Specified type and bool') if bool && type.present?
 
         type = BBK::Utils::Config::BooleanCaster.singleton_method(:cast) if bool
@@ -112,7 +116,9 @@ module BBK
           desc:     desc,
           bool:     true,
           type:     type,
-          secure:   secure
+          secure:   secure,
+          category: category,
+          warning:  warning
         }
       end
 

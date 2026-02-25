@@ -1,0 +1,55 @@
+categories:
+  app:
+    name: App
+    name_ru: Настройки приложения
+    envs:
+      - RAILS_ENV
+      - LOG_LEVEL 
+
+  transport_amqp:
+    name: Transport Amqp
+    desc_ru: Настройки подключения к RabbitMQ и работы с очередями 
+    env_patterns:
+      - AMQP_
+      - MQ_
+    envs:
+      - CA_CERT
+      - CLIENT_CERT
+      - CLIENT_KEY
+
+  database:
+    name: Database
+    name_ru: База данных
+    desc_ru: Настройки подключения к PostgreSQL
+    env_patterns:
+      - DATABASE_
+      - REQUEST_CREATE_PARTITION_
+
+  redis:
+    name: Redis
+    desc_ru: Настройки подключения к Redis для кэширования и очередей
+    env_patterns:
+      - REDIS_
+
+  discovery:
+    name: Discovery
+    name_ru: Обнаружение сервисов
+    env_patterns:
+      - CONSUL_
+
+  monitoring:
+    name: Monitoring
+    name_ru: Мониторинг
+    desc_ru: Настройки систем мониторинга и трейсинга
+    env_patterns:
+      - ELASTIC_
+      - JAEGER_
+      - PROMETHEUS_
+
+  filator:
+    name: Filator
+    name_ru: Файловое хранилище
+    desc_ru: Настройки интеграции с файловым хранилищем
+    env_patterns:
+      - FILATOR_
+
