@@ -1,14 +1,8 @@
 categories:
-  app:
-    name: App
-    name_ru: Настройки приложения
-    envs:
-      - RAILS_ENV
-      - LOG_LEVEL 
-
   transport_amqp:
     name: Transport Amqp
     desc_ru: Настройки подключения к RabbitMQ и работы с очередями 
+    order: 10
     env_patterns:
       - AMQP_
       - MQ_
@@ -21,6 +15,7 @@ categories:
     name: Database
     name_ru: База данных
     desc_ru: Настройки подключения к PostgreSQL
+    order: 20
     env_patterns:
       - DATABASE_
       - REQUEST_CREATE_PARTITION_
@@ -28,28 +23,39 @@ categories:
   redis:
     name: Redis
     desc_ru: Настройки подключения к Redis для кэширования и очередей
+    order: 30
     env_patterns:
       - REDIS_
 
   discovery:
     name: Discovery
     name_ru: Обнаружение сервисов
+    order: 40
     env_patterns:
       - CONSUL_
 
-  monitoring:
-    name: Monitoring
-    name_ru: Мониторинг
-    desc_ru: Настройки систем мониторинга и трейсинга
-    env_patterns:
-      - ELASTIC_
-      - JAEGER_
-      - PROMETHEUS_
+  app:
+    name: App
+    name_ru: Настройки приложения
+    order: 50
+    envs:
+      - RAILS_ENV
+      - LOG_LEVEL 
 
   filator:
     name: Filator
     name_ru: Файловое хранилище
     desc_ru: Настройки интеграции с файловым хранилищем
+    order: 60
     env_patterns:
       - FILATOR_
 
+  monitoring:
+    name: Monitoring
+    name_ru: Мониторинг
+    desc_ru: Настройки систем мониторинга и трейсинга
+    order: 70
+    env_patterns:
+      - ELASTIC_
+      - JAEGER_
+      - PROMETHEUS_
