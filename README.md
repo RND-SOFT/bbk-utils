@@ -37,14 +37,28 @@ Or adding to your project:
 gem "bbk-utils", "~> 1.0.0"
 ```
 
-### Supported Ruby versions
+## Features
 
-* Ruby (MRI) >= 2.5.0
+### bbkdocs
 
-### Tested Ruby versions
+Создать `bin/bbkdocs`:
 
-* Ruby (MRI) 2.5.x
-* Ruby (MRI) 3.0.x
+```ruby
+#!/usr/bin/env ruby
+
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
+require 'bbk/utils/cli'
+
+BBK::Utils::Cli::Docs.new(ARGV).run
+```
+
+Добавить в `Rakefile`:
+
+```ruby
+# Загружаем таски из BBK::Utils. В частности генерацию документации
+BBK::Utils.load_tasks
+```
+
 
 ## Contributing
 
