@@ -1,7 +1,16 @@
 module BBK
   module Utils
     module Cli
+      # Класс-строитель документации по категориям конфигурации
+      #
+      # Группирует конфигурационные параметры по категориям,
+      # обеспечивает сортировку и генерацию документации в различных форматах
       class Docs::Builder
+        # Инициализирует строитель документации
+        #
+        # @param bbk [Hash] конфигурация BBK
+        # @param config [Hash] конфигурация документирования
+        # @option config [Hash] :categories настройки категорий
         def initialize(bbk, config)
           @bbk = bbk
           @config = config
@@ -14,6 +23,9 @@ module BBK
           @categories[@default.id] = @default
         end
 
+        # Выполняет разбор конфигурации по категориям
+        #
+        # @return [self] возвращает сам объект для цепочного вызова
         def run
           @bbk.each do |(env_name, cfg)|
             category = @categories[cfg[:category]]
@@ -26,16 +38,29 @@ module BBK
           self
         end
 
+        # Преобразует документацию в JSON-хеш
+        #
+        # @param _args [Array] игнорируемые аргументы
+        # @param _kwargs [Hash] игнорируемые именованные аргументы
+        # @return [Hash] хеш со структурой документации по категориям
         def as_json(*_args, **_kwargs)
           @sorted.each_with_object({}) do |category, result|
             result[category.id] = category.as_json
           end
         end
 
+        # Преобразует документацию в JSON-строку
+        #
+        # @param args [Array] аргументы для JSON-генерации
+        # @param kwargs [Hash] именованные аргументы для JSON-генерации
+        # @return [String] JSON-строка документации
         def to_json(*args, **kwargs)
           as_json.to_json(*args, **kwargs)
         end
 
+        # Генерирует документацию в формате Markdown
+        #
+        # @return [String] markdown-разметка полной документации
         def to_markdown
           markdown_opts = {
             columns: { env: 'Название', _class: 'Тип', desc: 'Описание', default: 'Умолчание' },
@@ -57,7 +82,33 @@ module BBK
         end
       end
 
+      # Структура категории для группировки конфигураций
+      #
+      # @!attribute [r] id
+      #   @return [String] идентификатор категории
+      # @!attribute [r] name
+      #   @return [String] название категории
+      # @!attribute [r] desc
+      #   @return [String] описание категории
+      # @!attribute [r] envs
+      #   @return [Array<String>] список переменных окружения категории
+      # @!attribute [r] order
+      #   @return [Numeric] порядок сортировки
+      # @!attribute [r] patterns
+      #   @return [Array<String>] шаблоны для поиска элементов категории
+      # @!attribute [r] cfgs
+      #   @return [Array<Hash>] конфигурации категории
       Category = Struct.new(:id, :name, :desc, :envs, :order, :patterns, :cfgs, keyword_init: true) do
+        # Инициализирует категорию
+        #
+        # @param kwargs [Hash] параметры категории
+        # @option kwargs [String] :id идентификатор категории
+        # @option kwargs [String] :name название категории
+        # @option kwargs [String] :desc описание категории
+        # @option kwargs [Array<String>] :envs переменные окружения
+        # @option kwargs [Numeric] :order порядок сортировки
+        # @option kwargs [Array<String>] :patterns шаблоны поиска
+        # @option kwargs [Array<Hash>] :cfgs конфигурации
         def initialize(**kwargs)
           kwargs[:id] = kwargs[:id].to_s
           kwargs[:name] = kwargs[:name].to_s || kwargs[:id].capitalize
@@ -71,6 +122,10 @@ module BBK
           super
         end
 
+        # Проверяет соответствие имени переменной окружающей категории
+        #
+        # @param env_name [String, Symbol] имя переменной окружения
+        # @return [Boolean] true если соответствует категории
         def match?(env_name)
           return true if envs.any? { |e| e == env_name.to_s.strip }
 
@@ -79,6 +134,10 @@ module BBK
           false
         end
 
+        # Добавляет конфигурацию в категорию
+        #
+        # @param cfg [Hash] конфигурация для добавления
+        # @return [self] возвращает сам объект для цепочного вызова
         def add(cfg)
           cfgs << cfg
           self.cfgs = cfgs.sort_by { |c| c[:env] }

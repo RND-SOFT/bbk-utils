@@ -5,11 +5,22 @@ require 'optparse'
 module BBK
   module Utils
     module Cli
+      # Класс для генерации документации по конфигурации BBK
+      #
+      # Обеспечивает парсинг аргументов командной строки, загрузку конфигурации
+      # и генерацию документации в форматах JSON и Markdown
       class Docs
+        # Инициализирует объект генератора документации
+        #
+        # @param argv [Array<String>] аргументы командной строки
         def initialize(argv)
           @argv = argv
         end
 
+        # Основной метод запуска генерации документации
+        #
+        # @param argv [Array<String>] аргументы командной строки
+        # @return [void]
         def run(argv = @argv)
           options = parse!(argv)
 
@@ -36,6 +47,10 @@ module BBK
           end
         end
 
+        # Парсит аргументы командной строки
+        #
+        # @param argv [Array<String>] аргументы командной строки
+        # @return [Hash] хеш с опциями конфигурации
         def parse!(argv)
           options = {
             config: './.bbkdocs.yml',
@@ -68,6 +83,10 @@ module BBK
           options
         end
 
+        # Загружает и объединяет конфигурации из нескольких файлов
+        #
+        # @param files [Array<String>] пути к файлам конфигурации YAML
+        # @return [Hash] объединенная конфигурация с символизированными ключами
         def load_configuration(*files)
           files.each_with_object({}) do |file, config|
             loaded = YAML.load_file(file).deep_symbolize_keys!
@@ -92,6 +111,9 @@ module BBK
           end
         end
 
+        # Извлекает конфигурацию BBK и преобразует её в удобный формат
+        #
+        # @return [Hash] конфигурация BBK с дополнительной информацией о типах
         def extract_bbk_config
           bbk_cfg = BBK::Utils::Config.instance.as_json.deep_dup
           bbk_cfg = bbk_cfg[BBK::Utils::Config.instance.name] unless BBK::Utils::Config.instance.name.nil?

@@ -1,8 +1,13 @@
 module BBK
   module Utils
     module Cli
+      # Класс для генерации документации в формате Markdown
+      #
+      # Создает таблицы с переменными окружения, параметрами конфигурации и т.д.
+      # Поддерживает настраиваемые колонки, выравнивание, обрамление значений
+      # и предупреждения в двух режимах: сноски или встроенные
       class Docs::Markdown
-        # генерация markdown
+        # Генерация markdown-документации для категории
         # category_data = {
         #   category_data: {
         #   },
@@ -22,10 +27,22 @@ module BBK
 
         attr_reader :opts
 
+        # Инициализирует генератор Markdown
+        #
+        # @param opts [Hash] опции генерации
+        # @option opts [Hash] :columns отображаемые колонки с заголовками
+        # @option opts [Hash] :alignments выравнивание для каждой колонки
+        # @option opts [Hash] :wrappers обрамление значений колонок
+        # @option opts [Integer] :title_level уровень заголовка (1-6)
+        # @option opts [Hash] :warning настройки вывода предупреждений
         def initialize(opts = {})
           @opts = opts
         end
 
+        # Генерирует markdown-документацию для заданной категории
+        #
+        # @param category [Docs::Builder::Category] категория конфигурации
+        # @return [String] markdown-разметка документации
         def generate(category)
           # Соберем заголовок
           level = opts[:title_level].clamp(1, 6)
@@ -48,6 +65,11 @@ module BBK
           ].join("\n")
         end
 
+        # Генерирует строки для таблицы документации
+        #
+        # @param category [Docs::Builder::Category] категория конфигурации
+        # @param opts [Hash] опции генерации
+        # @return [Array] массив строк и сносок
         def generate_rows(category, opts)
           # извлекаем даныне
           rows = category.cfgs.map do |cfg|
@@ -65,6 +87,11 @@ module BBK
           [rows, footnotes]
         end
 
+        # Применяет обрамление к значениям в строках таблицы
+        #
+        # @param rows [Array<Array>] строки таблицы
+        # @param wrappers [Hash] хеш обрамления по индексам колонок
+        # @return [Array<Array>] строки с обрамленными значениями
         def wrap_row_values(rows, wrappers)
           return rows if wrappers.empty?
 
@@ -80,6 +107,14 @@ module BBK
           end
         end
 
+        # Обрабатывает предупреждения для строк таблицы
+        #
+        # @param rows [Array<Array>] строки таблицы
+        # @param category [Docs::Builder::Category] категория конфигурации
+        # @param warning_opts [Hash] опции обработки предупреждений
+        # @option warning_opts [Integer] :column_index индекс колонки для предупреждений
+        # @option warning_opts [Symbol] :mode режим вывода (:footnote или :inline)
+        # @return [Array] кортеж из обработанных строк и массива сносок
         def process_warnings(rows, category, warning_opts)
           return [rows, []] if !warning_opts || !warning_opts[:column_index]
 
@@ -111,6 +146,12 @@ module BBK
           [processed_rows, footnotes]
         end
 
+        # Генерирует таблицу в формате Markdown
+        #
+        # @param headers [Array<String>] заголовки колонок
+        # @param alignments [Hash] выравнивание для каждой колонки
+        # @param rows [Array<Array>] строки данных таблицы
+        # @return [Array<String>] массив строк markdown-таблицы
         def generate_table(headers = [], alignments = {}, rows)
           # Вычисляем ширину колонок
           column_widths = if headers.any?
