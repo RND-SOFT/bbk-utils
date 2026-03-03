@@ -16,6 +16,8 @@ require 'bundler'
 require 'bundler/setup'
 Bundler.require(:default, :development, :test)
 
+require 'bbk/utils/cli'
+
 BBK::Utils.logger = ::Logger.new(IO::NULL)
 
 $root = File.join(File.dirname(__dir__), 'spec')
