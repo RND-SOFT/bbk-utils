@@ -36,9 +36,17 @@ module BBK
         e.status
       end
 
+      def load_tasks
+        path = File.expand_path(__dir__)
+        Dir.glob("#{path}/utils/tasks/**/*.rake").each { |f| load f }
+      end
+
     end
 
     self.logger = ::BBK::Utils::Logger.default
+
+
+
 
   end
 end

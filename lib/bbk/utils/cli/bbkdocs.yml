@@ -1,0 +1,56 @@
+categories:
+  transport_amqp:
+    name: Transport Amqp
+    desc: Настройки подключения к RabbitMQ и работы с очередями 
+    order: 10
+    patterns:
+      - AMQP_
+      - MQ_
+    envs:
+      - CA_CERT
+      - CLIENT_CERT
+      - CLIENT_KEY
+
+  database:
+    name: База данных
+    desc: Настройки подключения к PostgreSQL
+    order: 20
+    patterns:
+      - DATABASE_
+      - REQUEST_CREATE_PARTITION_
+
+  redis:
+    name: Redis
+    desc: Настройки подключения к Redis для кэширования и очередей
+    order: 30
+    patterns:
+      - REDIS_
+
+  discovery:
+    name: Обнаружение сервисов
+    order: 40
+    patterns:
+      - CONSUL_
+
+  app:
+    name: Настройки приложения
+    order: 50
+    envs:
+      - RAILS_ENV
+      - LOG_LEVEL 
+
+  filator:
+    name: Файловое хранилище
+    desc: Настройки интеграции с файловым хранилищем
+    order: 60
+    patterns:
+      - FILATOR_
+
+  monitoring:
+    name: Мониторинг
+    desc: Настройки систем мониторинга и трейсинга
+    order: 70
+    patterns:
+      - ELASTIC_
+      - JAEGER_
+      - PROMETHEUS_

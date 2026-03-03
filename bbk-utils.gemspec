@@ -16,6 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.files         = Dir['bin/*', 'lib/**/*', 'sig/**/*', 'Gemfile*', 'LICENSE.txt', 'README.md']
   spec.bindir        = 'bin'
+  spec.executables   = spec.files.grep(%r{\Abin/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'activesupport', '>= 7.0'
