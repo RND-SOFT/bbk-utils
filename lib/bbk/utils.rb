@@ -32,7 +32,9 @@ module BBK
         logger.error "Exception: #{e.inspect}. Backtrace: #{e.backtrace.inspect}"
         1
       rescue SystemExit => e
-        logger.error "System exit: #{e.inspect}. Backtrace: #{e.backtrace.inspect}"
+        if e.status != 0
+          logger.error "System exit: #{e.inspect}. Backtrace: #{e.backtrace.inspect}"
+        end
         e.status
       end
 
