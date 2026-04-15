@@ -125,9 +125,9 @@ module BBK
             # "MQ_PORT"=>{:env=>"MQ_PORT", :file=>nil, :required=>false, :default=>"5671", :desc=>"Message Broker port", :bool=>true, :type=>nil, :secure=>false, :category=>nil, :warning=>nil, :value=>"5671"}
             # "INCOMING_ARCHIVE_ENABLED"=>{:env=>"INCOMING_ARCHIVE_ENABLED", :file=>nil, :required=>false, :default=>false, :desc=>"Включение подсистемы архивации входящих", :bool=>true, :type=>#<Method: BBK::Utils::Config::BooleanCaster.cast(value) /home/user/dev/rndsoft/aggredator/consumers/bbk-utils/lib/bbk/utils/config.rb:28>, :secure=>false, :category=>nil, :warning=>nil, :value=>false}
             unless v[:default].nil?
-              bbk_cfg[k][:_class] = case v[:default]
-                                    when Fugit::Duration then 'Duration'
-                                    when TrueClass, FalseClass then 'bool'
+              bbk_cfg[k][:_class] = case v[:default].class.to_s
+                                    when 'Fugit::Duration' then 'Duration'	# Fugit::Duration не известен в отдельном gem
+                                    when 'TrueClass', 'FalseClass' then 'bool'
                                     else
                                       v[:default].class.to_s
                                     end
