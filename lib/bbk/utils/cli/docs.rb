@@ -119,9 +119,19 @@ module BBK
           bbk_cfg = bbk_cfg[BBK::Utils::Config.instance.name] unless BBK::Utils::Config.instance.name.nil?
 
           BBK::Utils::Config.instance.send(:store_with_subconfigs).each do |k, v|
+            # "REQUEST_OPERATIONAL_INTERVAL"=>{:env=>"REQUEST_OPERATIONAL_INTERVAL", :file=>nil, :required=>false, :default=>#<Fugit::Duration:0x000078abf4b20f70 @original="1M", @options={}, @h={:mon=>1}>, :desc=>"Оперативный интервал Запросов: (NOW - INTERVAL, NOW]. Статистика по Запросам будет создаваться вплоть до <СЕЙЧАС - INTERVAL>. Округление до начала дня.", :bool=>true, :type=>#<Method: Object#duration_parser(raw_value) /home/user/dev/rndsoft/aggredator/consumers/apigw_AGG-4827/config/initializers/01_config.rb:8>, :secure=>false, :category=>nil, :warning=>nil, :value=>1 month}
             bbk_cfg[k][:default] = v[:default].original if v[:default]&.class&.to_s == 'Fugit::Duration'
 
-            bbk_cfg[k][:_class] = v[:default].class.to_s unless v[:default].nil?
+            # "MQ_PORT"=>{:env=>"MQ_PORT", :file=>nil, :required=>false, :default=>"5671", :desc=>"Message Broker port", :bool=>true, :type=>nil, :secure=>false, :category=>nil, :warning=>nil, :value=>"5671"}
+            # "INCOMING_ARCHIVE_ENABLED"=>{:env=>"INCOMING_ARCHIVE_ENABLED", :file=>nil, :required=>false, :default=>false, :desc=>"Включение подсистемы архивации входящих", :bool=>true, :type=>#<Method: BBK::Utils::Config::BooleanCaster.cast(value) /home/user/dev/rndsoft/aggredator/consumers/bbk-utils/lib/bbk/utils/config.rb:28>, :secure=>false, :category=>nil, :warning=>nil, :value=>false}
+            unless v[:default].nil?
+              bbk_cfg[k][:_class] = case v[:default]
+                                    when Fugit::Duration then 'Duration'
+                                    when TrueClass, FalseClass then 'bool'
+                                    else
+                                      v[:default].class.to_s
+                                    end
+            end
           end
 
           bbk_cfg.deep_symbolize_keys

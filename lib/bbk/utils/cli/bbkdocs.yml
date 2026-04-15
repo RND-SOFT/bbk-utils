@@ -1,6 +1,6 @@
 categories:
   transport_amqp:
-    name: Transport Amqp
+    name: AMQP-транспорт
     desc: Настройки подключения к RabbitMQ и работы с очередями 
     order: 10
     patterns:
