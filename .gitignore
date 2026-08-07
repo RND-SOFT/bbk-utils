@@ -15,3 +15,4 @@
 rspec.xml
 **/*.gem
 .ruby-version
+.tool-versions
