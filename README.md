@@ -38,6 +38,8 @@ Or adding to your project:
 # Gemfile
 
 gem "bbk-utils", "~> 1.0.0"
+```
+
 ## Возможности / Features
 
 ### EnvHelper — сборка URL подключений / URL Building Helper
