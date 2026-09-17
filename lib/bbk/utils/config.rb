@@ -680,6 +680,8 @@ module BBK
           if item[:default].present?
             def_value = if item[:secure]
               FILTERED_VALUE
+            elsif item[:default].respond_to?(:secure_inspect)
+              item[:default].secure_inspect
             else
               item[:default]
             end
@@ -693,6 +695,8 @@ module BBK
           end
           value = if item[:secure]
             FILTERED_VALUE
+          elsif item[:value].respond_to?(:secure_inspect)
+            item[:value].secure_inspect
           else
             item[:value].inspect
           end
